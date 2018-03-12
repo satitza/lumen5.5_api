@@ -98,7 +98,7 @@ class SetMenusController extends BaseController
                 ->join('hotels', 'set_menus.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'set_menus.restaurant_id', '=', 'restaurants.id')
                 ->where($where)->get();
-            return response()->json($set_menus);
+            return response()->json($set_menus, 200);
         } catch (HttpException $e) {
             return response()->json($e, 500);
         }
@@ -136,7 +136,7 @@ class SetMenusController extends BaseController
                 ->join('hotels', 'set_menus.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'set_menus.restaurant_id', '=', 'restaurants.id')
                 ->where($where)->get();
-            return response()->json($set_menus);
+            return response()->json($set_menus, 200);
         } catch (HttpException $e) {
             return response()->json($e, 500);
         }
