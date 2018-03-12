@@ -41,3 +41,4 @@ $router->group(['prefix' => 'api/menu', 'middleware' => 'auth'], function () use
     $router->get('all_menu_restaurant_id/{id}', 'SetMenusController@GetAllMenuRestaurantId');
     $router->get('all_menu_restaurant_name/{name}', 'SetMenusController@GetAllMenuRestaurantName');
 });
+
