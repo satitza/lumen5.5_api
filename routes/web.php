@@ -42,3 +42,7 @@ $router->group(['prefix' => 'api/menu', 'middleware' => 'auth'], function () use
     $router->get('all_menu_restaurant_name/{name}', 'SetMenusController@GetAllMenuRestaurantName');
 });
 
+$router->group(['prefix' => 'api/book', 'middleware' => 'auth'], function() use($router){
+    $router->post('put_book', 'BookCheckBalancesController@createBalance');
+});
+
