@@ -15,6 +15,11 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
+$router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use($router){
+    $router->get('get_all', 'GetAllController@GetAll');
+});
+
+
 $router->group(['prefix' => 'api/hotel', 'middleware' => 'auth'], function () use ($router) {
     $router->get('all_hotels', 'HotelsController@GetAllHotels');
     $router->get('hotel_id/{id}', 'HotelsController@GetHotelId');
