@@ -42,7 +42,7 @@ class RestaurantsController extends BaseController
         }
     }
 
-    public function GetRestaurantName($name)
+    /*public function GetRestaurantName($name)
     {
         try {
             $where = ['restaurants.active_id' => '1', 'restaurants.restaurant_name' => $name];
@@ -55,7 +55,7 @@ class RestaurantsController extends BaseController
         } catch (HttpException $e) {
             return response()->json($e, 500);
         }
-    }
+    }*/
 
     public function GetAllRestaurantHotelId($id)
     {
@@ -72,7 +72,7 @@ class RestaurantsController extends BaseController
         }
     }
 
-    public function GetAllRestaurantHotelName($name)
+    /*public function GetAllRestaurantHotelName($name)
     {
         try {
             $where = ['restaurants.active_id' => '1', 'hotel_name' => $name];
@@ -85,5 +85,5 @@ class RestaurantsController extends BaseController
         } catch (HttpException $e) {
             return response()->json($e, 500);
         }
-    }
+    }*/
 }

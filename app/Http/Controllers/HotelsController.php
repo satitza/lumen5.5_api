@@ -41,7 +41,7 @@ class HotelsController extends BaseController
         }
     }
 
-    public function GetHotelName($name)
+    /*public function GetHotelName($name)
     {
         try {
             $where = ['active_id' => '1', 'hotels.hotel_name' => $name];
@@ -53,7 +53,7 @@ class HotelsController extends BaseController
         } catch (HttpRequestException $e) {
             return response()->json($e, 500);
         }
-    }
+    }*/
 
 
 }
