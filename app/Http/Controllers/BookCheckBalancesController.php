@@ -27,8 +27,22 @@ class BookCheckBalancesController extends BaseController
             if ($this->CheckDateFromSetMenu($request->input('menu_id'), $request->input('menu_date')) == true) {
                 if ($this->BookCheckBalanceExists($request->input('menu_id'), $request->input('menu_date')) == true) {
                     //This menu in date has created in book balance
+                    $old_guests = DB::table('book_check_balances')->select('book_menu_balance')->get();
+                    $menu_guest = $request->input('menu_guest');
+                    foreach ($old_guests as $old_guest) {
+                        $new_guest = $old_guest->book_menu_balance - (int)$menu_guest;
+                    }
 
+                    DB::beginTransaction();
+                    DB::table('book_check_balances')->where('book_menu_id', $request->input('menu_id'))
+                        ->whereDate('book_menu_date', $request->input('menu_date'))->update([
+                            'book_menu_balance' => $new_guest
+                        ]);
+                    DB::commit();
 
+                    return response()->json([
+                        'msg' => 'update success'
+                    ], 200);
 
                 } else {
                     //Select guest from set_menus and create new rows
