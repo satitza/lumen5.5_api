@@ -24,33 +24,54 @@ class BookCheckBalancesController extends BaseController
                 'menu_guest' => 'required'
             ]);
 
+            if ($this->CheckDateFromSetMenu($request->input('menu_id'), $request->input('menu_date')) == true) {
+                if ($this->BookCheckBalanceExists($request->input('menu_id'), $request->input('menu_date')) == true) {
+                    //This menu in date has created in book balance
 
 
-            return response()->json($this->CheckMenuDate($request->input('menu_date')));
 
-            /*return response()->json([
-                'menu_id : ' => $request->input('menu_id'),
-                'menu_date : ' => $request->input('menu_date'),
-                'menu_guest : ' => $request->input('menu_guest')
-            ], 200);*/
+                } else {
+                    //Select guest from set_menus and create new rows
+
+
+                }
+            } else {
+                return response()->json([
+                    'msg' => 'cannot find menu from date request'
+                ], 200);
+            }
 
 
         } catch (HttpException $e) {
+            DB::rollback();
             return response()->json($e, 500);
         }
     }
 
-    public function CheckMenuDate($menu_date)
+    public function CheckDateFromSetMenu($menu_id, $menu_date)
     {
         try {
-            //Carbon::parse(date('Y-m-d', strtotime(strtr($request->menu_date_start, '/', '-'))));
-            if (DB::table('book_check_balances')->where('book_menu_date', '=', $menu_date)->exists()) {
-                return true;
-            } else {
-                return false;
-            }
+            return DB::table('set_menus')->where('id', $menu_id)
+                ->whereDate('menu_date_start', '<=', $menu_date)
+                ->whereDate('menu_date_end', '>=', $menu_date)
+                ->exists();
         } catch (Exception $e) {
-            return false;
+            return response()->json([
+                'msg' => $e
+            ]);
+        }
+    }
+
+    public function BookCheckBalanceExists($menu_id, $menu_date)
+    {
+        try {
+            //$where = ['menu_id' => $menu_id, 'menu_date' => $menu_date];
+            return DB::table('book_check_balances')->where('book_menu_id', $menu_id)
+                ->whereDate('book_menu_date', $menu_date)->exists();
+        } catch (Exception $e) {
+            return response()->json([
+                'msg' => $e
+            ]);
         }
     }
 }
