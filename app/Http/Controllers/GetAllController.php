@@ -25,7 +25,7 @@ class GetAllController extends Basecontroller
 
             $where = ['restaurants.active_id' => '1'];
             $restaurants = DB::table('restaurants')
-                ->select('restaurants.id', 'restaurant_name', 'hotel_name', 'actives.active', 'restaurant_comment')
+                ->select('restaurants.id', 'restaurant_name', 'restaurant_email', 'pdf_name', 'hotel_name', 'actives.active', 'restaurant_comment')
                 ->join('hotels', 'restaurants.hotel_id', '=', 'hotels.id')
                 ->join('actives', 'restaurants.active_id', '=', 'actives.id')
                 ->orderBy('restaurants.id', 'asc')->where($where)->get();
