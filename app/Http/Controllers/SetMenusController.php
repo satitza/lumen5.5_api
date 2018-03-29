@@ -17,7 +17,7 @@ class SetMenusController extends BaseController
         try {
             $set_menus = DB::table('set_menus')
                 ->select('set_menus.id', 'hotels.hotel_name', 'restaurant_id','restaurants.restaurant_name', 'languages.language',
-                    'menu_name', 'menu_date_start', 'menu_date_end', 'menu_date_select',
+                    'menu_name', 'image','menu_date_start', 'menu_date_end', 'menu_date_select',
                     'menu_time_lunch_start', 'menu_time_lunch_end', 'menu_time_dinner_start',
                     'menu_time_dinner_end', 'menu_price', 'menu_guest', 'menu_comment')
                 ->join('hotels', 'set_menus.hotel_id', '=', 'hotels.id')
@@ -37,7 +37,7 @@ class SetMenusController extends BaseController
             $where = ['set_menus.id' => $id];
             $set_menus = DB::table('set_menus')
                 ->select('set_menus.id', 'hotels.hotel_name', 'restaurant_id','restaurants.restaurant_name', 'languages.language',
-                    'menu_name', 'menu_date_start', 'menu_date_end', 'menu_date_select',
+                    'menu_name', 'image','menu_date_start', 'menu_date_end', 'menu_date_select',
                     'menu_time_lunch_start', 'menu_time_lunch_end', 'menu_time_dinner_start',
                     'menu_time_dinner_end', 'menu_price', 'menu_guest', 'menu_comment')
                 ->join('hotels', 'set_menus.hotel_id', '=', 'hotels.id')
@@ -74,7 +74,7 @@ class SetMenusController extends BaseController
             $where = ['set_menus.hotel_id' => $id];
             $set_menus = DB::table('set_menus')
                 ->select('set_menus.id', 'hotels.hotel_name', 'restaurant_id','restaurants.restaurant_name', 'languages.language',
-                    'menu_name', 'menu_date_start', 'menu_date_end', 'menu_date_select',
+                    'menu_name', 'image','menu_date_start', 'menu_date_end', 'menu_date_select',
                     'menu_time_lunch_start', 'menu_time_lunch_end', 'menu_time_dinner_start',
                     'menu_time_dinner_end', 'menu_price', 'menu_guest', 'menu_comment')
                 ->join('hotels', 'set_menus.hotel_id', '=', 'hotels.id')
@@ -113,7 +113,7 @@ class SetMenusController extends BaseController
             $where = ['set_menus.restaurant_id' => $id];
             $set_menus = DB::table('set_menus')
                 ->select('set_menus.id', 'hotels.hotel_name', 'restaurant_id','restaurants.restaurant_name', 'languages.language',
-                    'menu_name', 'menu_date_start', 'menu_date_end', 'menu_date_select',
+                    'menu_name', 'image','menu_date_start', 'menu_date_end', 'menu_date_select',
                     'menu_time_lunch_start', 'menu_time_lunch_end', 'menu_time_dinner_start',
                     'menu_time_dinner_end', 'menu_price', 'menu_guest', 'menu_comment')
                 ->join('hotels', 'set_menus.hotel_id', '=', 'hotels.id')
