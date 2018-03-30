@@ -16,13 +16,12 @@ class SetMenusController extends BaseController
     {
         try {
             $set_menus = DB::table('set_menus')
-                ->select('set_menus.id', 'hotels.hotel_name', 'restaurant_id','restaurants.restaurant_name', 'languages.language',
-                    'menu_name', 'image','menu_date_start', 'menu_date_end', 'menu_date_select',
+                ->select('set_menus.id', 'hotels.hotel_name', 'restaurant_id','restaurants.restaurant_name',
+                    'menu_name_th', 'menu_name_en', 'menu_name_cn','image','menu_date_start', 'menu_date_end', 'menu_date_select',
                     'menu_time_lunch_start', 'menu_time_lunch_end', 'menu_time_dinner_start',
-                    'menu_time_dinner_end', 'menu_price', 'menu_guest', 'menu_comment')
+                    'menu_time_dinner_end', 'menu_price', 'menu_guest', 'menu_comment_th', 'menu_comment_en', 'menu_comment_cn')
                 ->join('hotels', 'set_menus.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'set_menus.restaurant_id', '=', 'restaurants.id')
-                ->join('languages', 'set_menus.language_id', '=', 'languages.id')
                 ->orderBy('set_menus.id', 'asc')->get();
 
             return response()->json($set_menus, 200);
@@ -36,13 +35,12 @@ class SetMenusController extends BaseController
         try {
             $where = ['set_menus.id' => $id];
             $set_menus = DB::table('set_menus')
-                ->select('set_menus.id', 'hotels.hotel_name', 'restaurant_id','restaurants.restaurant_name', 'languages.language',
-                    'menu_name', 'image','menu_date_start', 'menu_date_end', 'menu_date_select',
+                ->select('set_menus.id', 'hotels.hotel_name', 'restaurant_id','restaurants.restaurant_name',
+                    'menu_name_th', 'menu_name_en', 'menu_name_cn', 'image','menu_date_start', 'menu_date_end', 'menu_date_select',
                     'menu_time_lunch_start', 'menu_time_lunch_end', 'menu_time_dinner_start',
-                    'menu_time_dinner_end', 'menu_price', 'menu_guest', 'menu_comment')
+                    'menu_time_dinner_end', 'menu_price', 'menu_guest', 'menu_comment_th', 'menu_comment_en', 'menu_comment_cn')
                 ->join('hotels', 'set_menus.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'set_menus.restaurant_id', '=', 'restaurants.id')
-                ->join('languages', 'set_menus.language_id', '=', 'languages.id')
                 ->where($where)->get();
             return response()->json($set_menus, 200);
         } catch (HttpException $e) {
@@ -73,13 +71,12 @@ class SetMenusController extends BaseController
         try {
             $where = ['set_menus.hotel_id' => $id];
             $set_menus = DB::table('set_menus')
-                ->select('set_menus.id', 'hotels.hotel_name', 'restaurant_id','restaurants.restaurant_name', 'languages.language',
-                    'menu_name', 'image','menu_date_start', 'menu_date_end', 'menu_date_select',
+                ->select('set_menus.id', 'hotels.hotel_name', 'restaurant_id','restaurants.restaurant_name',
+                    'menu_name_th', 'menu_name_en', 'menu_name_cn', 'image','menu_date_start', 'menu_date_end', 'menu_date_select',
                     'menu_time_lunch_start', 'menu_time_lunch_end', 'menu_time_dinner_start',
-                    'menu_time_dinner_end', 'menu_price', 'menu_guest', 'menu_comment')
+                    'menu_time_dinner_end', 'menu_price', 'menu_guest','menu_comment_th', 'menu_comment_en', 'menu_comment_cn')
                 ->join('hotels', 'set_menus.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'set_menus.restaurant_id', '=', 'restaurants.id')
-                ->join('languages', 'set_menus.language_id', '=', 'languages.id')
                 ->where($where)->get();
             return response()->json($set_menus, 200);
         } catch (HttpException $e) {
@@ -112,13 +109,12 @@ class SetMenusController extends BaseController
         try {
             $where = ['set_menus.restaurant_id' => $id];
             $set_menus = DB::table('set_menus')
-                ->select('set_menus.id', 'hotels.hotel_name', 'restaurant_id','restaurants.restaurant_name', 'languages.language',
-                    'menu_name', 'image','menu_date_start', 'menu_date_end', 'menu_date_select',
+                ->select('set_menus.id', 'hotels.hotel_name', 'restaurant_id','restaurants.restaurant_name',
+                    'menu_name_th', 'menu_name_en', 'menu_name_cn', 'image','menu_date_start', 'menu_date_end', 'menu_date_select',
                     'menu_time_lunch_start', 'menu_time_lunch_end', 'menu_time_dinner_start',
-                    'menu_time_dinner_end', 'menu_price', 'menu_guest', 'menu_comment')
+                    'menu_time_dinner_end', 'menu_price', 'menu_guest','menu_comment_th', 'menu_comment_en', 'menu_comment_cn')
                 ->join('hotels', 'set_menus.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'set_menus.restaurant_id', '=', 'restaurants.id')
-                ->join('languages', 'set_menus.language_id', '=', 'languages.id')
                 ->where($where)->get();
             return response()->json($set_menus, 200);
         } catch (HttpException $e) {

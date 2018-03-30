@@ -15,7 +15,7 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
-$router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use($router){
+$router->group(['prefix' => 'api', 'middleware' => 'auth'], function () use ($router) {
     $router->get('get_all', 'GetAllController@GetAll');
 });
 
@@ -26,7 +26,7 @@ $router->group(['prefix' => 'api/hotel', 'middleware' => 'auth'], function () us
     //$router->get('hotel_name/{name}', 'HotelsController@GetHotelName');
 });
 
-$router->group(['prefix' => 'api/restaurant', 'middleware' => 'auth'], function () use ($router){
+$router->group(['prefix' => 'api/restaurant', 'middleware' => 'auth'], function () use ($router) {
     $router->get('all_restaurants', 'RestaurantsController@GetAllRestaurants');
     $router->get('restaurant_id/{id}', 'RestaurantsController@GetRestaurantId');
     //$router->get('restaurant_name/{name}', 'RestaurantsController@GetRestaurantName');
@@ -35,7 +35,13 @@ $router->group(['prefix' => 'api/restaurant', 'middleware' => 'auth'], function 
     //$router->get('all_restaurant_hotel_name/{name}', 'RestaurantsController@GetAllRestaurantHotelName');
 });
 
-$router->group(['prefix' => 'api/menu', 'middleware' => 'auth'], function () use($router){
+$router->group(['prefix' => 'api/pdf', 'middleware' => 'auth'], function () use ($router) {
+    $router->get('all_pdfs', 'RestaurantPdfController@GetAllPdf');
+    $router->get('pdf_id/{id}', 'RestaurantPdfController@GetPdfId');
+    $router->get('pdf_restaurant_id/{id}', 'RestaurantPdfController@GetPdfRestaurantId');
+});
+
+$router->group(['prefix' => 'api/menu', 'middleware' => 'auth'], function () use ($router) {
     $router->get('all_menus', 'SetMenusController@GetAllMenus');
     $router->get('menu_id/{id}', 'SetMenusController@GetMenuId');
     //$router->get('menu_name/{name}', 'SetMenusController@GetMenuName');
@@ -47,7 +53,7 @@ $router->group(['prefix' => 'api/menu', 'middleware' => 'auth'], function () use
     //$router->get('all_menu_restaurant_name/{name}', 'SetMenusController@GetAllMenuRestaurantName');
 });
 
-$router->group(['prefix' => 'api/book', 'middleware' => 'auth'], function() use($router){
+$router->group(['prefix' => 'api/book', 'middleware' => 'auth'], function () use ($router) {
     $router->post('put_book', 'BookCheckBalancesController@createBalance');
 });
 
