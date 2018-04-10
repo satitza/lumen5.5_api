@@ -35,24 +35,6 @@ $router->group(['prefix' => 'api/restaurant', 'middleware' => 'auth'], function 
     //$router->get('all_restaurant_hotel_name/{name}', 'RestaurantsController@GetAllRestaurantHotelName');
 });
 
-/*$router->group(['prefix' => 'api/pdf', 'middleware' => 'auth'], function () use ($router) {
-    $router->get('all_pdfs', 'RestaurantPdfController@GetAllPdf');
-    $router->get('pdf_id/{id}', 'RestaurantPdfController@GetPdfId');
-    $router->get('pdf_restaurant_id/{id}', 'RestaurantPdfController@GetPdfRestaurantId');
-});*/
-
-/*$router->group(['prefix' => 'api/menu', 'middleware' => 'auth'], function () use ($router) {
-    $router->get('all_menus', 'SetMenusController@GetAllMenus');
-    $router->get('menu_id/{id}', 'SetMenusController@GetMenuId');
-    $router->get('menu_name/{name}', 'SetMenusController@GetMenuName');
-
-    $router->get('all_menu_hotel_id/{id}', 'SetMenusController@GetAllMenuHotelId');
-    $router->get('all_menu_hotel_name/{name}', 'SetMenusController@GetAllMenuHotelName');
-
-    $router->get('all_menu_restaurant_id/{id}', 'SetMenusController@GetAllMenuRestaurantId');
-    $router->get('all_menu_restaurant_name/{name}', 'SetMenusController@GetAllMenuRestaurantName');
-});*/
-
 $router->group(['prefix' => 'api/offer', 'middleware' => 'auth'], function () use ($router) {
     $router->get('all_offers', 'OffersController@GetAllOffers');
     $router->get('offer_id/{id}', 'OffersController@GetOfferId');
@@ -70,7 +52,10 @@ $router->group(['prefix' => 'api/image', 'middleware' => 'auth'], function () us
     $router->get('image_offer_id/{id}', 'ImagesController@GetImageOfferId');
 });
 
-$router->group(['prefix' => 'api/book', 'middleware' => 'auth'], function () use ($router) {
-    $router->post('put_book', 'BookCheckBalancesController@createBalance');
+$router->group(['prefix' => 'api/booking', 'middleware' => 'auth'], function () use ($router) {
+    //$router->post('put_book', 'BookCheckBalancesController@createBalance');
+
+    $router->post('put_booking', 'BookingController@createBooking');
+
 });
 
