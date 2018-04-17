@@ -159,8 +159,8 @@ class BookingController extends BaseController
     {
         try {
 
-
             $offers = DB::table('offers')->where('id', $offer_id)->first();
+
             if ((int)$offers->offer_lunch_guest < (int)$offer_guest) {
                 return response()->json([
                     'mag' => 'Invalid operator'
