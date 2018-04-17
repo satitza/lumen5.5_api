@@ -53,9 +53,6 @@ $router->group(['prefix' => 'api/image', 'middleware' => 'auth'], function () us
 });
 
 $router->group(['prefix' => 'api/booking', 'middleware' => 'auth'], function () use ($router) {
-    //$router->post('put_book', 'BookCheckBalancesController@createBalance');
-
     $router->post('put_booking', 'BookingController@createBooking');
-
 });
 
