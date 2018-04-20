@@ -64,7 +64,7 @@ class BookingController extends BaseController
 
                     if ((int)$offer_guest > (int)$old_guests->book_offer_balance) {
                         return response()->json([
-                            'msg' => 'Offer guest is over'
+                            'message' => 'Offer guest is over'
                         ]);
                     } else {
 
@@ -86,21 +86,27 @@ class BookingController extends BaseController
                 }
             } else {
                 return response()->json([
-                    'msg' => 'Cannot find offer from date request'
+                    'message' => 'Cannot find offer from date request'
                 ]);
             }
 
             return response()->json([
-                'msg' => 'Create booking success'
+                'message' => 'Create booking success'
             ]);
 
 
         } catch (QueryException $e) {
-            return response()->json($e->getMessage(), 500);
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
         } catch (Exception $e) {
-            return response()->json($e->getMessage(), 500);
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
         } catch (HttpException $e) {
-            return response()->json($e->getMessage(), 500);
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
         }
 
     }

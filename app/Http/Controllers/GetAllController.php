@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use DB;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\HttpException;
 use Laravel\Lumen\Routing\Controller as Basecontroller;
 
@@ -59,8 +60,14 @@ class GetAllController extends Basecontroller
                 'images' => $images
             ], 200);
 
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
         } catch (HttpException $e) {
-            return response()->json($e, 500);
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 }

@@ -22,8 +22,14 @@ class RestaurantsController extends BaseController
                 ->join('actives', 'restaurants.active_id', '=', 'actives.id')
                 ->orderBy('restaurants.id', 'asc')->where($where)->get();
             return response()->json($restaurants, 200);
-        } catch (HttpRequestException $e) {
-            return response()->json($e, 500);
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
+        } catch (HttpException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -37,8 +43,14 @@ class RestaurantsController extends BaseController
                 ->join('actives', 'restaurants.active_id', '=', 'actives.id')
                 ->orderBy('restaurants.id', 'asc')->where($where)->get();
             return response()->json($restaurants, 200);
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
         } catch (HttpException $e) {
-            return response()->json($e, 500);
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -67,8 +79,14 @@ class RestaurantsController extends BaseController
                 ->join('actives', 'restaurants.active_id', '=', 'actives.id')
                 ->orderBy('restaurants.id', 'asc')->where($where)->get();
             return response()->json($restaurants, 200);
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
         } catch (HttpException $e) {
-            return response()->json($e, 500);
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 
