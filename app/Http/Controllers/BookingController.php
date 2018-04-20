@@ -54,7 +54,7 @@ class BookingController extends BaseController
                 if ($this->BookCheckBalanceExists($request->booking_offer_id, $request->booking_date, $request->booking_time_type) == true) {
                     // update balance rows
 
-                    $where = ['book_offer_id' => $request->booking_offer_id, 'booking_time_type' => $request->booking_time_type];
+                    $where = ['book_offer_id' => $request->booking_offer_id, 'book_time_type' => $request->booking_time_type];
                     $old_guests = DB::table('book_check_balances')->select('book_offer_balance')
                         ->where($where)
                         ->whereDate('book_offer_date', $request->booking_date)
@@ -163,7 +163,7 @@ class BookingController extends BaseController
     public function BookCheckBalanceExists($offer_id, $offer_date, $time_type)
     {
         try {
-            $where = ['book_offer_id' => $offer_id, 'booking_time_type' => $time_type];
+            $where = ['book_offer_id' => $offer_id, 'book_time_type' => $time_type];
             return DB::table('book_check_balances')->where($where)
                 ->whereDate('book_offer_date', $offer_date)->exists();
         } catch (QueryException $e) {
@@ -197,7 +197,7 @@ class BookingController extends BaseController
             DB::beginTransaction();
             DB::table('book_check_balances')->insert([
                 'book_offer_id' => $offer_id,
-                'booking_time_type' => $time_type,
+                'book_time_type' => $time_type,
                 'book_offer_date' => Carbon::parse(date('Y-m-d', strtotime(strtr($offer_date, '/', '-')))),
                 'book_offer_guest' => $offer_guest,
                 'book_offer_balance' => $book_balance,

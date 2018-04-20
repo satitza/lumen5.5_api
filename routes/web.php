@@ -56,3 +56,7 @@ $router->group(['prefix' => 'api/booking', 'middleware' => 'auth'], function () 
     $router->post('put_booking', 'BookingController@createBooking');
 });
 
+$router->group(['prefix' => 'api/balance', 'middleware' => 'auth'], function () use ($router) {
+    $router->get('get_all_balances', 'BalanceController@GetAllBalances');
+});
+
