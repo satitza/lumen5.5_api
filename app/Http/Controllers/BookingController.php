@@ -54,21 +54,30 @@ class BookingController extends BaseController
                 if ($this->BookCheckBalanceExists($request->booking_offer_id, $request->booking_date, $request->booking_time_type) == true) {
                     // update balance rows
 
+                    $where = ['book_offer_id' => $request->booking_offer_id, 'booking_time_type' => $request->booking_time_type];
                     $old_guests = DB::table('book_check_balances')->select('book_offer_balance')
-                        ->where('book_offer_id', '=', $request->booking_offer_id)
+                        ->where($where)
                         ->whereDate('book_offer_date', $request->booking_date)
                         ->first();
 
                     $offer_guest = $request->booking_guest;
-                    $new_guest = (int)$old_guests->book_offer_balance - (int)$offer_guest;
 
-                    DB::beginTransaction();
-                    DB::table('book_check_balances')->where('book_offer_id', $request->booking_offer_id)
-                        ->whereDate('book_offer_date', $request->booking_date)->update([
-                            'book_offer_guest' => $offer_guest,
-                            'book_offer_balance' => $new_guest
+                    if ((int)$offer_guest > (int)$old_guests->book_offer_balance) {
+                        return response()->json([
+                            'msg' => 'Offer guest is over'
                         ]);
-                    DB::commit();
+                    } else {
+
+                        $new_guest = (int)$old_guests->book_offer_balance - (int)$offer_guest;
+
+                        DB::beginTransaction();
+                        DB::table('book_check_balances')->where($where)
+                            ->whereDate('book_offer_date', $request->booking_date)->update([
+                                'book_offer_guest' => $offer_guest,
+                                'book_offer_balance' => $new_guest
+                            ]);
+                        DB::commit();
+                    }
                 } else {
 
                     // create balance rows
@@ -87,11 +96,11 @@ class BookingController extends BaseController
 
 
         } catch (QueryException $e) {
-            return response()->json($e, 500);
+            return response()->json($e->getMessage(), 500);
         } catch (Exception $e) {
-            return response()->json($e, 500);
+            return response()->json($e->getMessage(), 500);
         } catch (HttpException $e) {
-            return response()->json($e, 500);
+            return response()->json($e->getMessage(), 500);
         }
 
     }
@@ -160,39 +169,41 @@ class BookingController extends BaseController
 
     public function CreateBalances($offer_id, $offer_date, $offer_guest, $time_type)
     {
+        $offers = DB::table('offers')->where('id', $offer_id)->first();
+        $book_balance = null;
+
+        if ($time_type == 'lunch') {
+            if ((int)$offer_guest > (int)$offers->offer_lunch_guest) {
+                throw new Exception("Invalid operator offer guest over lunch balance");
+            } else {
+                $book_balance = (int)$offers->offer_lunch_guest - (int)$offer_guest;
+            }
+        } else if ($time_type == 'dinner') {
+            if ((int)$offer_guest > (int)$offers->offer_dinner_guest) {
+                throw new Exception("Invalid operator offer guest over dinner balance");
+            } else {
+                $book_balance = (int)$offers->offer_dinner_guest - (int)$offer_guest;
+            }
+        }
+
         try {
 
-            $offers = DB::table('offers')->where('id', $offer_id)->first();
-            $book_balance = null;
+            DB::beginTransaction();
+            DB::table('book_check_balances')->insert([
+                'book_offer_id' => $offer_id,
+                'booking_time_type' => $time_type,
+                'book_offer_date' => Carbon::parse(date('Y-m-d', strtotime(strtr($offer_date, '/', '-')))),
+                'book_offer_guest' => $offer_guest,
+                'book_offer_balance' => $book_balance,
+                'active_id' => 1
+            ]);
+            DB::commit();
 
-            if ((int)$offers->offer_lunch_guest < (int)$offer_guest) {
-                return response()->json([
-                    'mag' => 'Invalid operator'
-                ]);
-            } else {
-
-                if ($time_type == 'lunch') {
-                    $book_balance = (int)$offers->offer_lunch_guest - (int)$offer_guest;
-                } else if ($time_type == 'dinner') {
-                    $book_balance = (int)$offers->offer_dinner_guest - (int)$offer_guest;
-                }
-
-
-                DB::beginTransaction();
-                DB::table('book_check_balances')->insert([
-                    'book_offer_id' => $offer_id,
-                    'booking_time_type' => $time_type,
-                    'book_offer_date' => Carbon::parse(date('Y-m-d', strtotime(strtr($offer_date, '/', '-')))),
-                    'book_offer_guest' => $offer_guest,
-                    'book_offer_balance' => $book_balance,
-                    'active_id' => 1
-                ]);
-                DB::commit();
-            }
         } catch (QueryException $e) {
             DB::rollback();
             throw new QueryException("Create balance query exception");
-        } catch (Exception $e) {
+        } catch
+        (Exception $e) {
             throw new Exception("Create balance exception");
         }
     }
