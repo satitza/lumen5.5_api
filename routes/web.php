@@ -58,5 +58,6 @@ $router->group(['prefix' => 'api/booking', 'middleware' => 'auth'], function () 
 
 $router->group(['prefix' => 'api/balance', 'middleware' => 'auth'], function () use ($router) {
     $router->get('get_all_balances', 'BalanceController@GetAllBalances');
+    $router->get('get_balance/{offer_id}/date/{offer_date}/time_type/{offer_time_type}', 'BalanceController@GetBalance');
 });
 
