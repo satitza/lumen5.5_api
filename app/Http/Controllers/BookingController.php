@@ -54,15 +54,19 @@ class BookingController extends BaseController
                 if ($this->BookCheckBalanceExists($request->booking_offer_id, $request->booking_date, $request->booking_time_type) == true) {
                     // update balance rows
 
-                    $where = ['book_offer_id' => $request->booking_offer_id, 'book_time_type' => $request->booking_time_type];
-                    $old_guests = DB::table('book_check_balances')->select('book_offer_balance')
+                    $where = ['book_offer_id' => $request->booking_offer_id, 'book_time_type' => $request->booking_time_type, 'active_id' => 1];
+                    $old_guests = DB::table('book_check_balances')->select('book_offer_balance', 'active_id')
                         ->where($where)
                         ->whereDate('book_offer_date', $request->booking_date)
                         ->first();
 
                     $offer_guest = $request->booking_guest;
 
-                    if ((int)$offer_guest > (int)$old_guests->book_offer_balance) {
+                    if (!isset($old_guests)) {
+                        return response()->json([
+                            'message' => 'Cannot update balance because this balance is disable'
+                        ]);
+                    } else if ((int)$offer_guest > (int)$old_guests->book_offer_balance) {
                         return response()->json([
                             'message' => 'Offer guest is over'
                         ]);
