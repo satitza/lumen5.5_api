@@ -25,7 +25,7 @@ class BookingController extends BaseController
                 'booking_id' => 'required',
                 'booking_offer_id' => 'required|integer',
                 'booking_date' => 'required|date|date_format:Y-m-d',
-                'booking_guest' => 'required|integer',
+                'booking_guest' => 'required|integer|between:1,1000',
                 'booking_contact_title' => 'required',
                 'booking_contact_firstname' => 'required',
                 'booking_contact_lastname' => 'required',
@@ -117,33 +117,46 @@ class BookingController extends BaseController
 
     public function InsertBooking($booking_id, $offer_id, $booking_date, $booking_guest, $booking_title, $booking_firstname, $booking_lastname, $booking_email, $booking_phone, $booking_request, $time_type)
     {
-        try {
+        if ($time_type == 'lunch' || $time_type == 'dinner') {
+            try {
 
-            $offers = DB::table('offers')->where('id', $offer_id)->first();
+                $booking_price = null;
+                $offers = DB::table('offers')->where('id', $offer_id)->first();
 
-            DB::beginTransaction();
-            DB::table('reports')->insert([
-                'booking_id' => $booking_id,
-                'booking_hotel_id' => $offers->hotel_id,
-                'booking_restaurant_id' => $offers->restaurant_id,
-                'booking_offer_id' => $offer_id,
-                'booking_date' => Carbon::parse(date('Y-m-d', strtotime(strtr($booking_date, '/', '-')))),
-                'booking_guest' => $booking_guest,
-                'booking_contact_title' => $booking_title,
-                'booking_contact_firstname' => $booking_firstname,
-                'booking_contact_lastname' => $booking_lastname,
-                'booking_contact_email' => $booking_email,
-                'booking_contact_phone' => $booking_phone,
-                'booking_contact_request' => $booking_request,
-                'booking_time_type' => $time_type,
-                'booking_status' => 1
-            ]);
-            DB::commit();
-        } catch (QueryException $e) {
-            DB::rollback();
-            throw new QueryException("Insert booking query exception");
-        } catch (Exception $e) {
-            throw new Exception("Insert booking exception");
+                if ($time_type == 'lunch') {
+                    $booking_price = (int)$booking_guest * (int)$offers->offer_lunch_price;
+                } else if ($time_type == 'dinner') {
+                    $booking_price = (int)$booking_guest * (int)$offers->offer_dinner_price;
+                }
+
+                DB::beginTransaction();
+                DB::table('reports')->insert([
+                    'booking_id' => $booking_id,
+                    'booking_hotel_id' => $offers->hotel_id,
+                    'booking_restaurant_id' => $offers->restaurant_id,
+                    'booking_offer_id' => $offer_id,
+                    'booking_date' => Carbon::parse(date('Y-m-d', strtotime(strtr($booking_date, '/', '-')))),
+                    'booking_guest' => $booking_guest,
+                    'booking_contact_title' => $booking_title,
+                    'booking_contact_firstname' => $booking_firstname,
+                    'booking_contact_lastname' => $booking_lastname,
+                    'booking_contact_email' => $booking_email,
+                    'booking_contact_phone' => $booking_phone,
+                    'booking_contact_request' => $booking_request,
+                    'booking_price' => $booking_price,
+                    'booking_time_type' => $time_type,
+                    'booking_status' => 1
+                ]);
+                DB::commit();
+            } catch (QueryException $e) {
+                DB::rollback();
+                throw new QueryException("Insert booking query exception");
+            } catch (Exception $e) {
+                throw new Exception("Insert booking exception");
+            }
+
+        } else {
+            throw new Exception("Invalid time type");
         }
     }
 
