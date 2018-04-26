@@ -120,14 +120,7 @@ class BookingController extends BaseController
         if ($time_type == 'lunch' || $time_type == 'dinner') {
             try {
 
-                $booking_price = null;
                 $offers = DB::table('offers')->where('id', $offer_id)->first();
-
-                if ($time_type == 'lunch') {
-                    $booking_price = (int)$booking_guest * (int)$offers->offer_lunch_price;
-                } else if ($time_type == 'dinner') {
-                    $booking_price = (int)$booking_guest * (int)$offers->offer_dinner_price;
-                }
 
                 DB::beginTransaction();
                 DB::table('reports')->insert([
@@ -143,7 +136,6 @@ class BookingController extends BaseController
                     'booking_contact_email' => $booking_email,
                     'booking_contact_phone' => $booking_phone,
                     'booking_contact_request' => $booking_request,
-                    'booking_price' => $booking_price,
                     'booking_time_type' => $time_type,
                     'booking_status' => 1
                 ]);
