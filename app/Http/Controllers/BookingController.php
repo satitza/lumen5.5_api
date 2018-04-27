@@ -135,7 +135,7 @@ class BookingController extends BaseController
                     $booking_price = (int)$offers->offer_dinner_price * (int)$booking_guest;
                 }
             }
-            
+
             try {
 
                 DB::beginTransaction();
