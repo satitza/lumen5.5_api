@@ -118,16 +118,25 @@ class BookingController extends BaseController
     public function InsertBooking($booking_id, $offer_id, $booking_date, $booking_guest, $booking_title, $booking_firstname, $booking_lastname, $booking_email, $booking_phone, $booking_request, $time_type)
     {
         if ($time_type == 'lunch' || $time_type == 'dinner') {
-            try {
 
-                $booking_price = null;
-                $offers = DB::table('offers')->where('id', $offer_id)->first();
+            $booking_price = null;
+            $offers = DB::table('offers')->where('id', $offer_id)->first();
 
-                if ($time_type == 'lunch') {
+            if ($time_type == 'lunch') {
+                if ((int)$booking_guest > (int)$offers->offer_lunch_guest) {
+                    throw new Exception("Invalid operator offer guest over lunch balance");
+                } else {
                     $booking_price = (int)$offers->offer_lunch_price * (int)$booking_guest;
-                } else if ($time_type == 'dinner') {
+                }
+            } else if ($time_type == 'dinner') {
+                if ((int)$booking_guest > (int)$offers->offer_dinner_guest) {
+                    throw new Exception("Invalid operator offer guest over dinner balance");
+                } else {
                     $booking_price = (int)$offers->offer_dinner_price * (int)$booking_guest;
                 }
+            }
+            
+            try {
 
                 DB::beginTransaction();
                 DB::table('reports')->insert([
