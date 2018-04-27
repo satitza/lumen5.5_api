@@ -65,11 +65,11 @@ class BookingController extends BaseController
                     if (!isset($old_guests)) {
                         return response()->json([
                             'message' => 'Cannot update balance because this balance is disable'
-                        ]);
+                        ], 500);
                     } else if ((int)$offer_guest > (int)$old_guests->book_offer_balance) {
                         return response()->json([
                             'message' => 'Offer guest is over'
-                        ]);
+                        ], 500);
                     } else {
 
                         $new_guest = (int)$old_guests->book_offer_balance - (int)$offer_guest;
@@ -91,12 +91,12 @@ class BookingController extends BaseController
             } else {
                 return response()->json([
                     'message' => 'Cannot find offer from date request'
-                ]);
+                ], 500);
             }
 
             return response()->json([
                 'message' => 'Create booking success'
-            ]);
+            ], 200);
 
 
         } catch (QueryException $e) {
