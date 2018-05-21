@@ -17,7 +17,7 @@ class OffersController extends BaseController
         try {
             $offers = DB::table('offers')
                 ->select('offers.id', 'hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
-                    'pdf', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
+                    'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
                     'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'offer_comment_th', 'offer_comment_en', 'offer_comment_cn')
                 ->join('hotels', 'offers.hotel_id', '=', 'hotels.id')
@@ -42,7 +42,7 @@ class OffersController extends BaseController
             $where = ['offers.id' => $id];
             $offers = DB::table('offers')
                 ->select('offers.id', 'hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
-                    'pdf', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
+                    'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
                     'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'offer_comment_th', 'offer_comment_en', 'offer_comment_cn')
                 ->join('hotels', 'offers.hotel_id', '=', 'hotels.id')
@@ -84,7 +84,7 @@ class OffersController extends BaseController
             $where = ['offers.hotel_id' => $id];
             $offers = DB::table('offers')
                 ->select('offers.id', 'hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
-                    'pdf', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
+                    'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
                     'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'offer_comment_th', 'offer_comment_en', 'offer_comment_cn')
                 ->join('hotels', 'offers.hotel_id', '=', 'hotels.id')
@@ -128,7 +128,7 @@ class OffersController extends BaseController
             $where = ['offers.restaurant_id' => $id];
             $offers = DB::table('offers')
                 ->select('offers.id', 'hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
-                    'pdf', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
+                    'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
                     'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'offer_comment_th', 'offer_comment_en', 'offer_comment_cn')
                 ->join('hotels', 'offers.hotel_id', '=', 'hotels.id')
