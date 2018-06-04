@@ -47,6 +47,11 @@ $router->group(['prefix' => 'api/offer', 'middleware' => 'auth'], function () us
     //$router->get('all_menu_restaurant_name/{name}', 'SetMenusController@GetAllMenuRestaurantName');
 });
 
+$router->group(['prefix' => 'api/condition', 'middleware' => 'auth'], function() use ($router){
+    $router->get('all_conditions', 'TermsController@GetAllConditions');
+    $router->get('get_conditions_offer/{offer_id}', 'TermsController@GetConditionsId');
+});
+
 $router->group(['prefix' => 'api/image', 'middleware' => 'auth'], function () use ($router) {
     $router->get('all_images', 'ImagesController@GetAllImages');
     $router->get('image_offer_id/{id}', 'ImagesController@GetImageOfferId');
