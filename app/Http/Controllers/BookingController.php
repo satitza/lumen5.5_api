@@ -66,114 +66,119 @@ class BookingController extends BaseController
          */
         if ($GLOBALS['time_type'] == "lunch" || $GLOBALS['time_type'] == "dinner") {
             /**
-             * Check offer exists
+             * Verify booking id
              */
-            try {
-                if ($this->CheckOfferExists($GLOBALS['offer_id'], $GLOBALS['book_date']) == true) {
-                    /**
-                     * Check balance exists
-                     */
-                    if ($this->CheckBalanceExists($GLOBALS['offer_id'], $GLOBALS['book_date'], $GLOBALS['time_type']) == true) {
+            if (DB::table('reports')->where('booking_id', $GLOBALS['book_id'])->exists()) {
+                return response()->json([
+                    'message' => 'Booking id was already'
+                ], 500);
+            } else {
+                /**
+                 * Check offer exists
+                 */
+                try {
+                    if ($this->CheckOfferExists($GLOBALS['offer_id'], $GLOBALS['book_date']) == true) {
                         /**
-                         * Check guest over balance
+                         * Check balance exists
                          */
-                        if ($this->CheckGuestOverBalance($GLOBALS['offer_id'], $GLOBALS['time_type'], $GLOBALS['book_date'], $GLOBALS['book_guest']) == false) {
+                        if ($this->CheckBalanceExists($GLOBALS['offer_id'], $GLOBALS['book_date'], $GLOBALS['time_type']) == true) {
                             /**
-                             * Create booking
+                             * Check guest over balance
                              */
-                            $this->create_booking(
-                                $GLOBALS['book_id'],
-                                $GLOBALS['offer_id'],
-                                $GLOBALS['book_date'],
-                                $GLOBALS['book_guest'],
-                                $GLOBALS['contact_title'],
-                                $GLOBALS['contact_firstname'],
-                                $GLOBALS['contact_lastname'],
-                                $GLOBALS['contact_email'],
-                                $GLOBALS['contact_phone'],
-                                $GLOBALS['contact_request'],
-                                $GLOBALS['time_type']
-                            );
+                            if ($this->CheckGuestOverBalance($GLOBALS['offer_id'], $GLOBALS['time_type'], $GLOBALS['book_date'], $GLOBALS['book_guest']) == false) {
+                                /**
+                                 * Create booking
+                                 */
+                                $this->create_booking(
+                                    $GLOBALS['book_id'],
+                                    $GLOBALS['offer_id'],
+                                    $GLOBALS['book_date'],
+                                    $GLOBALS['book_guest'],
+                                    $GLOBALS['contact_title'],
+                                    $GLOBALS['contact_firstname'],
+                                    $GLOBALS['contact_lastname'],
+                                    $GLOBALS['contact_email'],
+                                    $GLOBALS['contact_phone'],
+                                    $GLOBALS['contact_request'],
+                                    $GLOBALS['time_type']
+                                );
 
-                            /**
-                             * Update balance
-                             */
-                            $this->update_balance(
-                                $GLOBALS['offer_id'],
-                                $GLOBALS['book_date'],
-                                $GLOBALS['book_guest'],
-                                $GLOBALS['time_type']
-                            );
+                                $this->update_balance(
+                                    $GLOBALS['offer_id'],
+                                    $GLOBALS['book_date'],
+                                    $GLOBALS['book_guest'],
+                                    $GLOBALS['time_type']
+                                );
 
-                            return response()->json([
-                                'message' => 'Create booking success'
-                            ]);
+                                return response()->json([
+                                    'message' => 'Create booking success'
+                                ]);
 
+                            } else {
+                                return response()->json([
+                                    'message' => 'Booking guest is over balance'
+                                ]);
+                            }
                         } else {
-                            return response()->json([
-                                'message' => 'Booking guest is over balance'
-                            ]);
+                            /**
+                             * Check guest over offer
+                             */
+                            if ($this->CheckGuestOverOffer($GLOBALS['offer_id'], $GLOBALS['time_type'], $GLOBALS['book_guest']) == false) {
+                                /**
+                                 * Create booking
+                                 */
+                                $this->create_booking(
+                                    $GLOBALS['book_id'],
+                                    $GLOBALS['offer_id'],
+                                    $GLOBALS['book_date'],
+                                    $GLOBALS['book_guest'],
+                                    $GLOBALS['contact_title'],
+                                    $GLOBALS['contact_firstname'],
+                                    $GLOBALS['contact_lastname'],
+                                    $GLOBALS['contact_email'],
+                                    $GLOBALS['contact_phone'],
+                                    $GLOBALS['contact_request'],
+                                    $GLOBALS['time_type']
+                                );
+
+                                /**
+                                 * Create balance
+                                 */
+                                $this->create_balance(
+                                    $GLOBALS['offer_id'],
+                                    $GLOBALS['book_date'],
+                                    $GLOBALS['book_guest'],
+                                    $GLOBALS['time_type']
+                                );
+
+                                return response()->json([
+                                    'message' => 'Create booking success'
+                                ], 200);
+
+                            } else {
+                                return response()->json([
+                                    'message' => 'Booking guest is over offer'
+                                ], 500);
+                            }
                         }
+
                     } else {
-                        /**
-                         * Check guest over offer
-                         */
-                        if ($this->CheckGuestOverOffer($GLOBALS['offer_id'], $GLOBALS['time_type'], $GLOBALS['book_guest']) == false) {
-                            /**
-                             * Create booking
-                             */
-                            $this->create_booking(
-                                $GLOBALS['book_id'],
-                                $GLOBALS['offer_id'],
-                                $GLOBALS['book_date'],
-                                $GLOBALS['book_guest'],
-                                $GLOBALS['contact_title'],
-                                $GLOBALS['contact_firstname'],
-                                $GLOBALS['contact_lastname'],
-                                $GLOBALS['contact_email'],
-                                $GLOBALS['contact_phone'],
-                                $GLOBALS['contact_request'],
-                                $GLOBALS['time_type']
-                            );
-
-                            /**
-                             * Create balance
-                             */
-                            $this->create_balance(
-                                $GLOBALS['offer_id'],
-                                $GLOBALS['book_date'],
-                                $GLOBALS['book_guest'],
-                                $GLOBALS['time_type']
-                            );
-
-                            return response()->json([
-                                'message' => 'Create booking success'
-                            ], 200);
-
-                        } else {
-                            return response()->json([
-                                'message' => 'Booking guest is over offer'
-                            ], 500);
-                        }
+                        return response()->json([
+                            'message' => 'Offers not found'
+                        ], 500);
                     }
 
-                } else {
+                } catch (QueryException $e) {
                     return response()->json([
-                        'message' => 'Offers not found'
+                        'message' => $e->getMessage()
+                    ], 500);
+
+                } catch (Exception $e) {
+                    return response()->json([
+                        'message' => $e->getMessage()
                     ], 500);
                 }
-
-            } catch (QueryException $e) {
-                return response()->json([
-                    'message' => $e->getMessage()
-                ], 500);
-
-            } catch (Exception $e) {
-                return response()->json([
-                    'message' => $e->getMessage()
-                ], 500);
             }
-
         } else {
             return response()->json([
                 'message' => 'Invalid time type'

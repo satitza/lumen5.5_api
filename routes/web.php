@@ -59,6 +59,7 @@ $router->group(['prefix' => 'api/image', 'middleware' => 'auth'], function () us
 
 $router->group(['prefix' => 'api/booking', 'middleware' => 'auth'], function () use ($router) {
     $router->post('put_booking', 'BookingController@booking');
+    $router->post('check_bill', 'CheckBillController@check_bill');
 });
 
 $router->group(['prefix' => 'api/balance', 'middleware' => 'auth'], function () use ($router) {
