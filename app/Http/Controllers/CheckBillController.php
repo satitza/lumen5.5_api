@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use DB;
-use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\HttpException;
 use Illuminate\Http\Request;
@@ -55,7 +54,7 @@ class CheckBillController extends BaseController
                 $this->update_report($GLOBALS['book_id']);
                 return response()->json([
                     'message' => 'Update booking status success',
-                    'email' => $this->get_email($GLOBALS['book_id'])
+                    'information' => $this->get_information($GLOBALS['book_id'])
                 ], 200);
             } catch (QueryException $e) {
                 return response()->json([
@@ -105,12 +104,30 @@ class CheckBillController extends BaseController
         }
     }
 
-    public function get_email($book_id)
+    public function get_information($book_id)
     {
         try {
-            $email = DB::table('reports')->select('booking_contact_email')
+            $informations = DB::table('reports')->select(
+                'booking_id',
+                'hotels.hotel_name',
+                'restaurants.restaurant_name',
+                'offers.offer_name_en',
+                'reports.booking_date',
+                'reports.booking_guest',
+                'reports.booking_contact_title',
+                'reports.booking_contact_firstname',
+                'reports.booking_contact_lastname',
+                'reports.booking_contact_email',
+                'reports.booking_contact_phone',
+                'reports.booking_contact_request',
+                'reports.booking_price',
+                'reports.booking_time_type'
+            )
+                ->join('hotels', 'reports.booking_hotel_id', 'hotels.id')
+                ->join('restaurants', 'reports.booking_restaurant_id', 'restaurants.id')
+                ->join('offers', 'reports.booking_offer_id', 'offers.id')
                 ->where('booking_id', $book_id)->first();
-            return $email->booking_contact_email;
+            return $informations;
         } catch (QueryException $e) {
             throw new QueryException("Update booking status query exception");
         } catch (Exception $e) {
