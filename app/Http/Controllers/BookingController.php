@@ -12,15 +12,14 @@ use Mockery\Exception;
 
 class BookingController extends BaseController
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
-    public function createBooking(Request $request)
+    /**
+     * BookingController constructor.
+     * @param Request $request
+     */
+    public function __construct(Request $request)
     {
         try {
-
+            $this->middleware('auth');
             $this->validate($request, [
                 'booking_id' => 'required',
                 'booking_offer_id' => 'required|integer',
@@ -34,200 +33,331 @@ class BookingController extends BaseController
                 'booking_time_type' => 'required'
             ]);
 
-            if ($this->CheckDateFromOfferId($request->booking_offer_id, $request->booking_date) == true) {
+            $GLOBALS['book_id'] = $request->booking_id;
+            $GLOBALS['offer_id'] = $request->booking_offer_id;
+            $GLOBALS['book_date'] = $request->booking_date;
+            $GLOBALS['book_guest'] = $request->booking_guest;
+            $GLOBALS['contact_title'] = $request->booking_contact_title;
+            $GLOBALS['contact_firstname'] = $request->booking_contact_firstname;
+            $GLOBALS['contact_lastname'] = $request->booking_contact_lastname;
+            $GLOBALS['contact_email'] = $request->booking_contact_email;
+            $GLOBALS['contact_phone'] = $request->booking_contact_phone;
+            $GLOBALS['contact_request'] = $request->booking_contact_request;
+            $GLOBALS['time_type'] = $request->booking_time_type;
 
-                $this->InsertBooking(
-                    $request->booking_id,
-                    $request->booking_offer_id,
-                    $request->booking_date,
-                    $request->booking_guest,
-                    $request->booking_contact_title,
-                    $request->booking_contact_firstname,
-                    $request->booking_contact_lastname,
-                    $request->booking_contact_email,
-                    $request->booking_contact_phone,
-                    $request->booking_contact_request,
-                    $request->booking_time_type
-                );
-
-
-                if ($this->BookCheckBalanceExists($request->booking_offer_id, $request->booking_date, $request->booking_time_type) == true) {
-                    // update balance rows
-
-                    $where = ['book_offer_id' => $request->booking_offer_id, 'book_time_type' => $request->booking_time_type, 'active_id' => 1];
-                    $old_guests = DB::table('book_check_balances')->select('book_offer_balance', 'active_id')
-                        ->where($where)
-                        ->whereDate('book_offer_date', $request->booking_date)
-                        ->first();
-
-                    $offer_guest = $request->booking_guest;
-
-                    if (!isset($old_guests)) {
-                        return response()->json([
-                            'message' => 'Cannot update balance because this balance is disable'
-                        ], 500);
-                    } else if ((int)$offer_guest > (int)$old_guests->book_offer_balance) {
-                        return response()->json([
-                            'message' => 'Offer guest is over'
-                        ], 500);
-                    } else {
-
-                        $new_guest = (int)$old_guests->book_offer_balance - (int)$offer_guest;
-
-                        DB::beginTransaction();
-                        DB::table('book_check_balances')->where($where)
-                            ->whereDate('book_offer_date', $request->booking_date)->update([
-                                'book_offer_guest' => $offer_guest,
-                                'book_offer_balance' => $new_guest
-                            ]);
-                        DB::commit();
-                    }
-                } else {
-
-                    // create balance rows
-                    $this->CreateBalances($request->booking_offer_id, $request->booking_date, $request->booking_guest, $request->booking_time_type);
-
-                }
-            } else {
-                return response()->json([
-                    'message' => 'Cannot find offer from date request'
-                ], 500);
-            }
-
-            return response()->json([
-                'message' => 'Create booking success'
-            ], 200);
-
-
-        } catch (QueryException $e) {
-            return response()->json([
-                'message' => $e->getMessage()
-            ], 500);
-        } catch (Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage()
-            ], 500);
         } catch (HttpException $e) {
             return response()->json([
                 'message' => $e->getMessage()
             ], 500);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage()
+            ], 500);
         }
-
     }
 
-    public function InsertBooking($booking_id, $offer_id, $booking_date, $booking_guest, $booking_title, $booking_firstname, $booking_lastname, $booking_email, $booking_phone, $booking_request, $time_type)
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function booking()
     {
-        if ($time_type == 'lunch' || $time_type == 'dinner') {
-
-            /*$where = ['book_offer_id' => $offer_id, 'book_time_type' => $time_type];
-            if (DB::table('book_check_balances')->where($where)->exists()){
-                dd($where);
-                return response()->json([
-                    'msg' => 'have balance'
-                ]);
-            }else{
-
-
-            }*/
-
-            $booking_price = null;
-            $offers = DB::table('offers')->where('id', $offer_id)->first();
-
-            if ($time_type == 'lunch') {
-                if ((int)$booking_guest > (int)$offers->offer_lunch_guest) {
-                    throw new Exception("Invalid operator offer guest over lunch balance");
-                } else {
-                    $booking_price = (int)$offers->offer_lunch_price * (int)$booking_guest;
-                }
-            } else if ($time_type == 'dinner') {
-                if ((int)$booking_guest > (int)$offers->offer_dinner_guest) {
-                    //echo "WTF";
-                    throw new Exception("Invalid operator offer guest over dinner balance");
-                } else {
-                    $booking_price = (int)$offers->offer_dinner_price * (int)$booking_guest;
-                }
-            }
-
+        /**
+         * Verify time type between lunch or dinner
+         */
+        if ($GLOBALS['time_type'] == "lunch" || $GLOBALS['time_type'] == "dinner") {
+            /**
+             * Check offer exists
+             */
             try {
+                if ($this->CheckOfferExists($GLOBALS['offer_id'], $GLOBALS['book_date']) == true) {
+                    /**
+                     * Check balance exists
+                     */
+                    if ($this->CheckBalanceExists($GLOBALS['offer_id'], $GLOBALS['book_date'], $GLOBALS['time_type']) == true) {
+                        /**
+                         * Check guest over balance
+                         */
+                        if ($this->CheckGuestOverBalance($GLOBALS['offer_id'], $GLOBALS['time_type'], $GLOBALS['book_date'], $GLOBALS['book_guest']) == false) {
+                            /**
+                             * Create booking
+                             */
+                            $this->create_booking(
+                                $GLOBALS['book_id'],
+                                $GLOBALS['offer_id'],
+                                $GLOBALS['book_date'],
+                                $GLOBALS['book_guest'],
+                                $GLOBALS['contact_title'],
+                                $GLOBALS['contact_firstname'],
+                                $GLOBALS['contact_lastname'],
+                                $GLOBALS['contact_email'],
+                                $GLOBALS['contact_phone'],
+                                $GLOBALS['contact_request'],
+                                $GLOBALS['time_type']
+                            );
 
-                DB::beginTransaction();
-                DB::table('reports')->insert([
-                    'booking_id' => $booking_id,
-                    'booking_hotel_id' => $offers->hotel_id,
-                    'booking_restaurant_id' => $offers->restaurant_id,
-                    'booking_offer_id' => $offer_id,
-                    'booking_date' => Carbon::parse(date('Y-m-d', strtotime(strtr($booking_date, '/', '-')))),
-                    'booking_guest' => $booking_guest,
-                    'booking_contact_title' => $booking_title,
-                    'booking_contact_firstname' => $booking_firstname,
-                    'booking_contact_lastname' => $booking_lastname,
-                    'booking_contact_email' => $booking_email,
-                    'booking_contact_phone' => $booking_phone,
-                    'booking_contact_request' => $booking_request,
-                    'booking_price' => $booking_price,
-                    'booking_time_type' => $time_type,
-                    'booking_status' => 1
-                ]);
-                DB::commit();
+                            /**
+                             * Update balance
+                             */
+                            $this->update_balance(
+                                $GLOBALS['offer_id'],
+                                $GLOBALS['book_date'],
+                                $GLOBALS['book_guest'],
+                                $GLOBALS['time_type']
+                            );
+
+                            return response()->json([
+                                'message' => 'Create booking success'
+                            ]);
+
+                        } else {
+                            return response()->json([
+                                'message' => 'Booking guest is over balance'
+                            ]);
+                        }
+                    } else {
+                        /**
+                         * Check guest over offer
+                         */
+                        if ($this->CheckGuestOverOffer($GLOBALS['offer_id'], $GLOBALS['time_type'], $GLOBALS['book_guest']) == false) {
+                            /**
+                             * Create booking
+                             */
+                            $this->create_booking(
+                                $GLOBALS['book_id'],
+                                $GLOBALS['offer_id'],
+                                $GLOBALS['book_date'],
+                                $GLOBALS['book_guest'],
+                                $GLOBALS['contact_title'],
+                                $GLOBALS['contact_firstname'],
+                                $GLOBALS['contact_lastname'],
+                                $GLOBALS['contact_email'],
+                                $GLOBALS['contact_phone'],
+                                $GLOBALS['contact_request'],
+                                $GLOBALS['time_type']
+                            );
+
+                            /**
+                             * Create balance
+                             */
+                            $this->create_balance(
+                                $GLOBALS['offer_id'],
+                                $GLOBALS['book_date'],
+                                $GLOBALS['book_guest'],
+                                $GLOBALS['time_type']
+                            );
+
+                            return response()->json([
+                                'message' => 'Create booking success'
+                            ], 200);
+
+                        } else {
+                            return response()->json([
+                                'message' => 'Booking guest is over offer'
+                            ], 500);
+                        }
+                    }
+
+                } else {
+                    return response()->json([
+                        'message' => 'Offers not found'
+                    ], 500);
+                }
+
             } catch (QueryException $e) {
-                DB::rollback();
-                throw new QueryException("Insert booking query exception");
+                return response()->json([
+                    'message' => $e->getMessage()
+                ], 500);
+
             } catch (Exception $e) {
-                throw new Exception("Insert booking exception");
+                return response()->json([
+                    'message' => $e->getMessage()
+                ], 500);
             }
 
         } else {
-            throw new Exception("Invalid time type");
+            return response()->json([
+                'message' => 'Invalid time type'
+            ], 503);
         }
     }
 
-
-    public function CheckDateFromOfferId($offer_id, $offer_date)
+    /**
+     * @param $offer_id
+     * @param $offer_date
+     * @return true or false
+     */
+    public function CheckOfferExists($offer_id, $book_date)
     {
         try {
-            //if check exists this return true
             return DB::table('offers')->where('id', $offer_id)
-                ->whereDate('offer_date_start', '<=', $offer_date)
-                ->whereDate('offer_date_end', '>=', $offer_date)
+                ->whereDate('offer_date_start', '<=', $book_date)
+                ->whereDate('offer_date_end', '>=', $book_date)
                 ->exists();
 
         } catch (QueryException $e) {
-            throw new QueryException("Check date from offer id query exception");
+            throw new QueryException("Check offer exists query exception");
         } catch (Exception $e) {
-            throw new Exception("Check date from offer id exception");
+            throw new Exception("Check offer exists exception");
         }
     }
 
-    public function BookCheckBalanceExists($offer_id, $offer_date, $time_type)
+    /**
+     * @param $offer_id
+     * @param $offer_date
+     * @param $time_type
+     * @return true or false
+     */
+    public function CheckBalanceExists($offer_id, $book_date, $time_type)
     {
         try {
             $where = ['book_offer_id' => $offer_id, 'book_time_type' => $time_type];
             return DB::table('book_check_balances')->where($where)
-                ->whereDate('book_offer_date', $offer_date)->exists();
+                ->whereDate('book_offer_date', $book_date)->exists();
         } catch (QueryException $e) {
-            throw new QueryException("Book check balances exists query exception");
+            throw new QueryException("Check balances exists query exception");
         } catch (Exception $e) {
-            throw new Exception("Book check balances exists exception");
+            throw new Exception("Check balances exists exception");
         }
     }
 
-    public function CreateBalances($offer_id, $offer_date, $offer_guest, $time_type)
+    /**
+     * @param $offer_id
+     * @param $time_type
+     * @param $book_guest
+     * @return true or false
+     */
+    public function CheckGuestOverOffer($offer_id, $time_type, $book_guest)
+    {
+        try {
+            $offer_guest = null;
+            if ($time_type == 'lunch') {
+                $offer_guest = 'offer_lunch_guest';
+            } else if ($time_type == 'dinner') {
+                $offer_guest = 'offer_dinner_guest';
+            }
+
+            $where = ['id' => $offer_id];
+            $offers = DB::table('offers')->where($where)->first();
+
+            if ((int)$book_guest > (int)$offers->$offer_guest) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (QueryException $e) {
+            throw new QueryException("Check guest over offer query exception");
+        } catch (Exception $e) {
+            throw new Exception("Check guest over offer exists exception");
+        }
+    }
+
+    /**
+     * @param $offer_id
+     * @param $time_type
+     * @param $book_date
+     * @param $book_guest
+     * @return true or false
+     */
+    public function CheckGuestOverBalance($offer_id, $time_type, $book_date, $book_guest)
+    {
+        try {
+            $where = ['book_offer_id' => $offer_id, 'book_time_type' => $time_type];
+            $balances = DB::table('book_check_balances')->where($where)
+                ->WhereDate('book_offer_date', $book_date)->first();
+            if ((int)$book_guest > (int)$balances->book_offer_balance) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (QueryException $e) {
+            throw new QueryException("Check guest over balances query exception");
+        } catch (Exception $e) {
+            throw new Exception("Check guest over balances exists exception");
+        }
+    }
+
+    /**
+     * @param $book_id
+     * @param $offer_id
+     * @param $book_date
+     * @param $book_guest
+     * @param $book_title
+     * @param $book_firstname
+     * @param $book_lastname
+     * @param $book_email
+     * @param $book_phone
+     * @param $book_request
+     * @param $time_type
+     */
+    public function create_booking(
+        $book_id,
+        $offer_id,
+        $book_date,
+        $book_guest,
+        $book_title,
+        $book_firstname,
+        $book_lastname,
+        $book_email,
+        $book_phone,
+        $book_request,
+        $time_type
+    )
+    {
+        try {
+
+            $book_price = null;
+            $offers = DB::table('offers')->where('id', $offer_id)->first();
+
+            if ($time_type == 'lunch') {
+                $book_price = (int)$offers->offer_lunch_price * (int)$book_guest;
+            } else if ($time_type == 'dinner') {
+                $book_price = (int)$offers->offer_dinner_price * (int)$book_guest;
+            }
+
+            DB::beginTransaction();
+            DB::table('reports')->insert([
+                'booking_id' => $book_id,
+                'booking_hotel_id' => $offers->hotel_id,
+                'booking_restaurant_id' => $offers->restaurant_id,
+                'booking_offer_id' => $offer_id,
+                'booking_date' => Carbon::parse(date('Y-m-d', strtotime(strtr($book_date, '/', '-')))),
+                'booking_guest' => $book_guest,
+                'booking_contact_title' => $book_title,
+                'booking_contact_firstname' => $book_firstname,
+                'booking_contact_lastname' => $book_lastname,
+                'booking_contact_email' => $book_email,
+                'booking_contact_phone' => $book_phone,
+                'booking_contact_request' => $book_request,
+                'booking_price' => $book_price,
+                'booking_time_type' => $time_type,
+                'booking_status' => 1
+            ]);
+            DB::commit();
+
+        } catch (QueryException $e) {
+            DB::rollback();
+            throw new QueryException("Insert booking query exception");
+        } catch (Exception $e) {
+            throw new Exception("Insert booking exception");
+        }
+    }
+
+    /**
+     * @param $offer_id
+     * @param $book_date
+     * @param $book_guest
+     * @param $time_type
+     */
+    public function create_balance($offer_id, $book_date, $book_guest, $time_type)
     {
         $offers = DB::table('offers')->where('id', $offer_id)->first();
         $book_balance = null;
 
         if ($time_type == 'lunch') {
-            if ((int)$offer_guest > (int)$offers->offer_lunch_guest) {
-                throw new Exception("Invalid operator offer guest over lunch balance");
-            } else {
-                $book_balance = (int)$offers->offer_lunch_guest - (int)$offer_guest;
-            }
+            $book_balance = (int)$offers->offer_lunch_guest - (int)$book_guest;
         } else if ($time_type == 'dinner') {
-            if ((int)$offer_guest > (int)$offers->offer_dinner_guest) {
-                throw new Exception("Invalid operator offer guest over dinner balance");
-            } else {
-                $book_balance = (int)$offers->offer_dinner_guest - (int)$offer_guest;
-            }
+            $book_balance = (int)$offers->offer_dinner_guest - (int)$book_guest;
         }
 
         try {
@@ -236,13 +366,59 @@ class BookingController extends BaseController
             DB::table('book_check_balances')->insert([
                 'book_offer_id' => $offer_id,
                 'book_time_type' => $time_type,
-                'book_offer_date' => Carbon::parse(date('Y-m-d', strtotime(strtr($offer_date, '/', '-')))),
-                'book_offer_guest' => $offer_guest,
+                'book_offer_date' => Carbon::parse(date('Y-m-d', strtotime(strtr($book_date, '/', '-')))),
+                'book_offer_guest' => $book_guest,
                 'book_offer_balance' => $book_balance,
                 'active_id' => 1
             ]);
             DB::commit();
 
+        } catch (QueryException $e) {
+            DB::rollback();
+            throw new QueryException("Create balance query exception");
+        } catch
+        (Exception $e) {
+            throw new Exception("Create balance exception");
+        }
+    }
+
+    /**
+     * @param $offer_id
+     * @param $book_date
+     * @param $book_guest
+     * @param $time_type
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update_balance($offer_id, $book_date, $book_guest, $time_type)
+    {
+        try {
+            $where = ['book_offer_id' => $offer_id, 'book_time_type' => $time_type, 'active_id' => 1];
+            $old_guests = DB::table('book_check_balances')->select('book_offer_balance')
+                ->where($where)
+                ->whereDate('book_offer_date', $book_date)
+                ->first();
+
+
+            if (!isset($old_guests)) {
+                return response()->json([
+                    'message' => 'Cannot update balance because this balance is disable'
+                ], 500);
+            } else if ((int)$book_guest > (int)$old_guests->book_offer_balance) {
+                return response()->json([
+                    'message' => 'Cannot update balance because booking guest is over'
+                ], 500);
+            } else {
+
+                $new_guest = (int)$old_guests->book_offer_balance - (int)$book_guest;
+
+                DB::beginTransaction();
+                DB::table('book_check_balances')->where($where)
+                    ->whereDate('book_offer_date', $book_date)->update([
+                        'book_offer_guest' => $book_guest,
+                        'book_offer_balance' => $new_guest
+                    ]);
+                DB::commit();
+            }
         } catch (QueryException $e) {
             DB::rollback();
             throw new QueryException("Create balance query exception");
