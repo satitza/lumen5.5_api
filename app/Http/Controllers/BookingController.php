@@ -119,6 +119,17 @@ class BookingController extends BaseController
     {
         if ($time_type == 'lunch' || $time_type == 'dinner') {
 
+            /*$where = ['book_offer_id' => $offer_id, 'book_time_type' => $time_type];
+            if (DB::table('book_check_balances')->where($where)->exists()){
+                dd($where);
+                return response()->json([
+                    'msg' => 'have balance'
+                ]);
+            }else{
+
+
+            }*/
+
             $booking_price = null;
             $offers = DB::table('offers')->where('id', $offer_id)->first();
 
@@ -130,6 +141,7 @@ class BookingController extends BaseController
                 }
             } else if ($time_type == 'dinner') {
                 if ((int)$booking_guest > (int)$offers->offer_dinner_guest) {
+                    //echo "WTF";
                     throw new Exception("Invalid operator offer guest over dinner balance");
                 } else {
                     $booking_price = (int)$offers->offer_dinner_price * (int)$booking_guest;

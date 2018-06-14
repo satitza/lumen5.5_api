@@ -19,7 +19,7 @@ class HotelsController extends BaseController
         try {
             $where = ['active_id' => '1'];
             $hotels = DB::table('hotels')
-                ->select('hotels.id', 'hotel_name', 'actives.active', 'hotel_comment')
+                ->select('hotels.id', 'hotel_name', 'hotels.mid', 'hotels.secret_key', 'actives.active', 'hotel_comment')
                 ->join('actives', 'hotels.active_id', '=', 'actives.id')
                 ->orderBy('hotels.id', 'asc')->where($where)->get();
             return response()->json($hotels, 200);
@@ -39,7 +39,7 @@ class HotelsController extends BaseController
         try {
             $where = ['active_id' => '1', 'hotels.id' => $id];
             $hotels = DB::table('hotels')
-                ->select('hotels.id', 'hotel_name', 'actives.active', 'hotel_comment')
+                ->select('hotels.id', 'hotel_name', 'hotels.mid', 'hotels.secret_key', 'actives.active', 'hotel_comment')
                 ->join('actives', 'hotels.active_id', '=', 'actives.id')
                 ->orderBy('hotels.id', 'asc')->where($where)->get();
             return response()->json($hotels, 200);

@@ -16,7 +16,7 @@ class OffersController extends BaseController
     {
         try {
             $offers = DB::table('offers')
-                ->select('offers.id', 'hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
+                ->select('offers.id', 'offers.hotel_id','hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
                     'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
                     'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'offer_short_th', 'offer_short_en', 'offer_short_cn',
@@ -62,6 +62,7 @@ class OffersController extends BaseController
                 array_push(
                     $all_offers, [
                     'id' => $offer->id,
+                    'hotel_id' => $offer->hotel_id,
                     'hotel_name' => $offer->hotel_name,
                     'restaurant_id' => $offer->restaurant_id,
                     'restaurant_name' => $offer->restaurant_name,
@@ -111,7 +112,7 @@ class OffersController extends BaseController
         try {
             $where = ['offers.id' => $id];
             $offers = DB::table('offers')
-                ->select('offers.id', 'hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
+                ->select('offers.id', 'offers.hotel_id','hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
                     'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
                     'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'offer_short_th', 'offer_short_en', 'offer_short_cn',
@@ -157,6 +158,7 @@ class OffersController extends BaseController
                 array_push(
                     $all_offers, [
                     'id' => $offer->id,
+                    'hotel_id', $offer->hotel_id,
                     'hotel_name' => $offer->hotel_name,
                     'restaurant_id' => $offer->restaurant_id,
                     'restaurant_name' => $offer->restaurant_name,
@@ -223,7 +225,7 @@ class OffersController extends BaseController
         try {
             $where = ['offers.hotel_id' => $id];
             $offers = DB::table('offers')
-                ->select('offers.id', 'hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
+                ->select('offers.id', 'offers.hotel_id','hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
                     'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
                     'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'offer_short_th', 'offer_short_en', 'offer_short_cn',
@@ -269,6 +271,7 @@ class OffersController extends BaseController
                 array_push(
                     $all_offers, [
                     'id' => $offer->id,
+                    'hotel_id' => $offer->hotel_id,
                     'hotel_name' => $offer->hotel_name,
                     'restaurant_id' => $offer->restaurant_id,
                     'restaurant_name' => $offer->restaurant_name,
@@ -337,7 +340,7 @@ class OffersController extends BaseController
         try {
             $where = ['offers.restaurant_id' => $id];
             $offers = DB::table('offers')
-                ->select('offers.id', 'hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
+                ->select('offers.id', 'offers.hotel_id','hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
                     'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
                     'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'offer_short_th', 'offer_short_en', 'offer_short_cn',
@@ -383,6 +386,7 @@ class OffersController extends BaseController
                 array_push(
                     $all_offers, [
                     'id' => $offer->id,
+                    'hotel_id' => $offer->hotel_id,
                     'hotel_name' => $offer->hotel_name,
                     'restaurant_id' => $offer->restaurant_id,
                     'restaurant_name' => $offer->restaurant_name,
