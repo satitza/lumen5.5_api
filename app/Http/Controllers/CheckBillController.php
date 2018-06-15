@@ -113,6 +113,7 @@ class CheckBillController extends BaseController
                 'restaurants.restaurant_name',
                 'offers.offer_name_en',
                 'reports.booking_date',
+                'reports.booking_time',
                 'reports.booking_guest',
                 'reports.booking_contact_title',
                 'reports.booking_contact_firstname',

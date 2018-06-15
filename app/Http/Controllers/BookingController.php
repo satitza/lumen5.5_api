@@ -24,6 +24,7 @@ class BookingController extends BaseController
                 'booking_id' => 'required',
                 'booking_offer_id' => 'required|integer',
                 'booking_date' => 'required|date|date_format:Y-m-d',
+                'booking_time' => 'required',
                 'booking_guest' => 'required|integer|between:1,1000',
                 'booking_contact_title' => 'required',
                 'booking_contact_firstname' => 'required',
@@ -36,6 +37,7 @@ class BookingController extends BaseController
             $GLOBALS['book_id'] = $request->booking_id;
             $GLOBALS['offer_id'] = $request->booking_offer_id;
             $GLOBALS['book_date'] = $request->booking_date;
+            $GLOBALS['book_time'] = $request->booking_time;
             $GLOBALS['book_guest'] = $request->booking_guest;
             $GLOBALS['contact_title'] = $request->booking_contact_title;
             $GLOBALS['contact_firstname'] = $request->booking_contact_firstname;
@@ -93,6 +95,7 @@ class BookingController extends BaseController
                                     $GLOBALS['book_id'],
                                     $GLOBALS['offer_id'],
                                     $GLOBALS['book_date'],
+                                    $GLOBALS['book_time'],
                                     $GLOBALS['book_guest'],
                                     $GLOBALS['contact_title'],
                                     $GLOBALS['contact_firstname'],
@@ -131,6 +134,7 @@ class BookingController extends BaseController
                                     $GLOBALS['book_id'],
                                     $GLOBALS['offer_id'],
                                     $GLOBALS['book_date'],
+                                    $GLOBALS['book_time'],
                                     $GLOBALS['book_guest'],
                                     $GLOBALS['contact_title'],
                                     $GLOBALS['contact_firstname'],
@@ -299,6 +303,7 @@ class BookingController extends BaseController
         $book_id,
         $offer_id,
         $book_date,
+        $book_time,
         $book_guest,
         $book_title,
         $book_firstname,
@@ -327,6 +332,7 @@ class BookingController extends BaseController
                 'booking_restaurant_id' => $offers->restaurant_id,
                 'booking_offer_id' => $offer_id,
                 'booking_date' => Carbon::parse(date('Y-m-d', strtotime(strtr($book_date, '/', '-')))),
+                'booking_time' => $book_time,
                 'booking_guest' => $book_guest,
                 'booking_contact_title' => $book_title,
                 'booking_contact_firstname' => $book_firstname,
