@@ -20,6 +20,7 @@ class BookingController extends BaseController
     {
         try {
             $this->middleware('auth');
+
             $this->validate($request, [
                 'booking_id' => 'required',
                 'booking_offer_id' => 'required|integer',
@@ -31,7 +32,8 @@ class BookingController extends BaseController
                 'booking_contact_lastname' => 'required',
                 'booking_contact_email' => 'required|email',
                 'booking_contact_phone' => 'required|numeric',
-                'booking_time_type' => 'required'
+                'booking_time_type' => 'required',
+                'voucher' => 'required'
             ]);
 
             $GLOBALS['book_id'] = $request->booking_id;
@@ -46,6 +48,8 @@ class BookingController extends BaseController
             $GLOBALS['contact_phone'] = $request->booking_contact_phone;
             $GLOBALS['contact_request'] = $request->booking_contact_request;
             $GLOBALS['time_type'] = $request->booking_time_type;
+            $GLOBALS['voucher'] = $request->voucher;
+            $GLOBALS['voucher_status'] = 1;
 
         } catch (HttpException $e) {
             return response()->json([
@@ -58,11 +62,39 @@ class BookingController extends BaseController
         }
     }
 
+
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function booking()
+    public function booking(Request $request)
     {
+        /**
+         * Check voucher value
+         */
+        if ((int)$GLOBALS['voucher'] != 1 && (int)$GLOBALS['voucher'] != 2) {
+            return response()->json([
+                'message' => 'Invalid voucher value'
+            ]);
+        } else if ($GLOBALS['voucher'] == 2) {
+
+            $this->validate($request, [
+                'booking_contact_title_v' => 'required',
+                'booking_contact_firstname_v' => 'required',
+                'booking_contact_lastname_v' => 'required',
+                'booking_contact_email_v' => 'required',
+                'booking_contact_phone_v' => 'required',
+            ]);
+
+            $GLOBALS['contact_title_v'] = $request->booking_contact_title_v;
+            $GLOBALS['contact_firstname_v'] = $request->booking_contact_firstname_v;
+            $GLOBALS['contact_lastname_v'] = $request->booking_contact_lastname_v;
+            $GLOBALS['contact_email_v'] = $request->booking_contact_email_v;
+            $GLOBALS['contact_phone_v'] = $request->booking_contact_phone_v;
+            $GLOBALS['contact_request_v'] = $request->booking_contact_request_v;
+            $GLOBALS['voucher_status'] = 2;
+        }
+
+
         /**
          * Verify time type between lunch or dinner
          */
@@ -103,8 +135,24 @@ class BookingController extends BaseController
                                     $GLOBALS['contact_email'],
                                     $GLOBALS['contact_phone'],
                                     $GLOBALS['contact_request'],
-                                    $GLOBALS['time_type']
+                                    $GLOBALS['time_type'],
+                                    $GLOBALS['voucher_status']
                                 );
+
+                                /**
+                                 * Create Voucher user if voucher == true
+                                 */
+                                if ((int)$GLOBALS['voucher'] == 2) {
+                                    $this->create_voucher(
+                                        $GLOBALS['book_id'],
+                                        $GLOBALS['contact_title_v'],
+                                        $GLOBALS['contact_firstname_v'],
+                                        $GLOBALS['contact_lastname_v'],
+                                        $GLOBALS['contact_email_v'],
+                                        $GLOBALS['contact_phone_v'],
+                                        $GLOBALS['contact_request_v']
+                                    );
+                                }
 
                                 $this->update_balance(
                                     $GLOBALS['offer_id'],
@@ -142,8 +190,24 @@ class BookingController extends BaseController
                                     $GLOBALS['contact_email'],
                                     $GLOBALS['contact_phone'],
                                     $GLOBALS['contact_request'],
-                                    $GLOBALS['time_type']
+                                    $GLOBALS['time_type'],
+                                    $GLOBALS['voucher_status']
                                 );
+
+                                /**
+                                 * Create Voucher user if voucher == true
+                                 */
+                                if ((int)$GLOBALS['voucher'] == 2) {
+                                    $this->create_voucher(
+                                        $GLOBALS['book_id'],
+                                        $GLOBALS['contact_title_v'],
+                                        $GLOBALS['contact_firstname_v'],
+                                        $GLOBALS['contact_lastname_v'],
+                                        $GLOBALS['contact_email_v'],
+                                        $GLOBALS['contact_phone_v'],
+                                        $GLOBALS['contact_request_v']
+                                    );
+                                }
 
                                 /**
                                  * Create balance
@@ -311,7 +375,8 @@ class BookingController extends BaseController
         $book_email,
         $book_phone,
         $book_request,
-        $time_type
+        $time_type,
+        $voucher_status
     )
     {
         try {
@@ -342,7 +407,51 @@ class BookingController extends BaseController
                 'booking_contact_request' => $book_request,
                 'booking_price' => $book_price,
                 'booking_time_type' => $time_type,
+                'booking_voucher' => $voucher_status,
                 'booking_status' => 1
+            ]);
+            DB::commit();
+
+        } catch (QueryException $e) {
+            DB::rollback();
+            throw new QueryException("Insert booking query exception");
+        } catch (Exception $e) {
+            throw new Exception("Insert booking exception");
+        }
+    }
+
+
+    /**
+     * @param $book_id
+     * @param $book_title_v
+     * @param $book_firstname_v
+     * @param $book_lastname_v
+     * @param $book_email_v
+     * @param $book_phone_v
+     * @param $book_request_v
+     */
+    public function create_voucher(
+        $book_id,
+        $book_title_v,
+        $book_firstname_v,
+        $book_lastname_v,
+        $book_email_v,
+        $book_phone_v,
+        $book_request_v
+    )
+    {
+        try {
+
+            DB::beginTransaction();
+            DB::table('vouchers')->insert([
+                'voucher_booking_id' => $book_id,
+                'voucher_contact_title' => $book_title_v,
+                'voucher_contact_firstname' => $book_firstname_v,
+                'voucher_contact_lastname' => $book_lastname_v,
+                'voucher_contact_email' => $book_email_v,
+                'voucher_contact_phone' => $book_phone_v,
+                'voucher_contact_request' => $book_request_v,
+
             ]);
             DB::commit();
 
