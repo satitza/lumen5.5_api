@@ -52,10 +52,22 @@ class CheckBillController extends BaseController
                  * Update booking status
                  */
                 $this->update_report($GLOBALS['book_id']);
+                $informations = $this->get_information($GLOBALS['book_id']);
+                $vouchers = null;
+
+                /**
+                 * check voucher
+                 */
+                if ((int)$informations->booking_voucher == 2) {
+                    $vouchers = $this->get_vouchers($GLOBALS['book_id']);
+                }
+
                 return response()->json([
                     'message' => 'Update booking status success',
-                    'information' => $this->get_information($GLOBALS['book_id'])
+                    'information' => $informations,
+                    'voucher' => $vouchers
                 ], 200);
+
             } catch (QueryException $e) {
                 return response()->json([
                     'message' => $e->getMessage()
@@ -87,6 +99,9 @@ class CheckBillController extends BaseController
         }
     }
 
+    /**
+     * @param $book_id
+     */
     public function update_report($book_id)
     {
         try {
@@ -98,12 +113,16 @@ class CheckBillController extends BaseController
             DB::commit();
         } catch (QueryException $e) {
             DB::rollback();
-            throw new QueryException("Update booking status query exception");
+            throw new QueryException("Update report status query exception");
         } catch (Exception $e) {
-            throw new Exception("Update booking status exception");
+            throw new Exception("Update report status exception");
         }
     }
 
+    /**
+     * @param $book_id
+     * @return mixed
+     */
     public function get_information($book_id)
     {
         try {
@@ -122,7 +141,8 @@ class CheckBillController extends BaseController
                 'reports.booking_contact_phone',
                 'reports.booking_contact_request',
                 'reports.booking_price',
-                'reports.booking_time_type'
+                'reports.booking_time_type',
+                'reports.booking_voucher'
             )
                 ->join('hotels', 'reports.booking_hotel_id', 'hotels.id')
                 ->join('restaurants', 'reports.booking_restaurant_id', 'restaurants.id')
@@ -130,9 +150,32 @@ class CheckBillController extends BaseController
                 ->where('booking_id', $book_id)->first();
             return $informations;
         } catch (QueryException $e) {
-            throw new QueryException("Update booking status query exception");
+            throw new QueryException("Get Information query exception");
         } catch (Exception $e) {
-            throw new Exception("Update booking status exception");
+            throw new Exception("Get Information exception");
+        }
+    }
+
+    /**
+     * @param $book_id
+     */
+    public function get_vouchers($book_id)
+    {
+        try {
+            $vouchers = DB::table('vouchers')->select(
+                'voucher_contact_title',
+                'voucher_contact_firstname',
+                'voucher_contact_lastname',
+                'voucher_contact_email',
+                'voucher_contact_phone',
+                'voucher_contact_request'
+            )
+                ->where('voucher_booking_id', $book_id)->first();
+            return $vouchers;
+        } catch (QueryException $e) {
+            throw new QueryException("Get vouchers query exception");
+        } catch (Exception $e) {
+            throw new Exception("Get vouchers exception");
         }
     }
 }
