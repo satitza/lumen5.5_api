@@ -152,7 +152,7 @@ class BookingController extends BaseController
                                         $GLOBALS['contact_phone_v'],
                                         $GLOBALS['contact_request_v']
                                     );
-                                }else{
+                                } else {
                                     $this->update_balance(
                                         $GLOBALS['offer_id'],
                                         $GLOBALS['book_date'],
@@ -207,7 +207,7 @@ class BookingController extends BaseController
                                         $GLOBALS['contact_phone_v'],
                                         $GLOBALS['contact_request_v']
                                     );
-                                }else{
+                                } else {
                                     /**
                                      * Create balance
                                      */
@@ -406,6 +406,8 @@ class BookingController extends BaseController
                 'booking_contact_phone' => $book_phone,
                 'booking_contact_request' => $book_request,
                 'booking_price' => $book_price,
+                'currency_id' => $offers->currency_id,
+                'rate_suffix_id' => $offers->rate_suffix_id,
                 'booking_time_type' => $time_type,
                 'booking_voucher' => $voucher_status,
                 'booking_status' => 1
