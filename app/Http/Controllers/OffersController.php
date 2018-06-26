@@ -19,10 +19,13 @@ class OffersController extends BaseController
                 ->select('offers.id', 'offers.hotel_id','hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
                     'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
-                    'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'offer_short_th', 'offer_short_en', 'offer_short_cn',
+                    'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'currency', 'rate_suffix',
+                    'offer_short_th', 'offer_short_en', 'offer_short_cn',
                     'offer_comment_th', 'offer_comment_en', 'offer_comment_cn')
                 ->join('hotels', 'offers.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'offers.restaurant_id', '=', 'restaurants.id')
+                ->join('currencies', 'offers.currency_id', '=', 'currencies.id')
+                ->join('rate_suffixes', 'offers.rate_suffix_id', '=', 'rate_suffixes.id')
                 ->orderBy('offers.id', 'asc')->get();
 
             $all_offers = array();
@@ -81,6 +84,8 @@ class OffersController extends BaseController
                     'offer_time_dinner_end' => $offer->offer_time_dinner_end,
                     'offer_dinner_price' => $offer->offer_dinner_price,
                     'offer_dinner_guest' => $offer->offer_dinner_guest,
+                    'currency' => $offer->currency,
+                    'rate_suffix' => $offer->rate_suffix,
                     'offer_short_th' => $offer->offer_short_th,
                     'offer_short_en' => $offer->offer_short_en,
                     'offer_short_cn' => $offer->offer_short_cn,
@@ -115,10 +120,13 @@ class OffersController extends BaseController
                 ->select('offers.id', 'offers.hotel_id','hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
                     'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
-                    'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'offer_short_th', 'offer_short_en', 'offer_short_cn',
+                    'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'currency', 'rate_suffix',
+                    'offer_short_th', 'offer_short_en', 'offer_short_cn',
                     'offer_comment_th', 'offer_comment_en', 'offer_comment_cn')
                 ->join('hotels', 'offers.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'offers.restaurant_id', '=', 'restaurants.id')
+                ->join('currencies', 'offers.currency_id', '=', 'currencies.id')
+                ->join('rate_suffixes', 'offers.rate_suffix_id', '=', 'rate_suffixes.id')
                 ->where($where)->get();
 
             $all_offers = array();
@@ -177,6 +185,8 @@ class OffersController extends BaseController
                     'offer_time_dinner_end' => $offer->offer_time_dinner_end,
                     'offer_dinner_price' => $offer->offer_dinner_price,
                     'offer_dinner_guest' => $offer->offer_dinner_guest,
+                    'currency' => $offer->currency,
+                    'rate_suffix' => $offer->rate_suffix,
                     'offer_short_th' => $offer->offer_short_th,
                     'offer_short_en' => $offer->offer_short_en,
                     'offer_short_cn' => $offer->offer_short_cn,
@@ -228,10 +238,13 @@ class OffersController extends BaseController
                 ->select('offers.id', 'offers.hotel_id','hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
                     'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
-                    'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'offer_short_th', 'offer_short_en', 'offer_short_cn',
+                    'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'currency', 'rate_suffix',
+                    'offer_short_th', 'offer_short_en', 'offer_short_cn',
                     'offer_comment_th', 'offer_comment_en', 'offer_comment_cn')
                 ->join('hotels', 'offers.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'offers.restaurant_id', '=', 'restaurants.id')
+                ->join('currencies', 'offers.currency_id', '=', 'currencies.id')
+                ->join('rate_suffixes', 'offers.rate_suffix_id', '=', 'rate_suffixes.id')
                 ->where($where)->get();
 
             $all_offers = array();
@@ -290,6 +303,8 @@ class OffersController extends BaseController
                     'offer_time_dinner_end' => $offer->offer_time_dinner_end,
                     'offer_dinner_price' => $offer->offer_dinner_price,
                     'offer_dinner_guest' => $offer->offer_dinner_guest,
+                    'currency' => $offer->currency,
+                    'rate_suffix' => $offer->rate_suffix,
                     'offer_short_th' => $offer->offer_short_th,
                     'offer_short_en' => $offer->offer_short_en,
                     'offer_short_cn' => $offer->offer_short_cn,
@@ -343,10 +358,13 @@ class OffersController extends BaseController
                 ->select('offers.id', 'offers.hotel_id','hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
                     'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
-                    'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'offer_short_th', 'offer_short_en', 'offer_short_cn',
+                    'offer_time_dinner_end', 'offer_dinner_price', 'currency', 'rate_suffix',
+                    'offer_dinner_guest', 'offer_short_th', 'offer_short_en', 'offer_short_cn',
                     'offer_comment_th', 'offer_comment_en', 'offer_comment_cn')
                 ->join('hotels', 'offers.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'offers.restaurant_id', '=', 'restaurants.id')
+                ->join('currencies', 'offers.currency_id', '=', 'currencies.id')
+                ->join('rate_suffixes', 'offers.rate_suffix_id', '=', 'rate_suffixes.id')
                 ->where($where)->get();
 
             $all_offers = array();
@@ -405,6 +423,8 @@ class OffersController extends BaseController
                     'offer_time_dinner_end' => $offer->offer_time_dinner_end,
                     'offer_dinner_price' => $offer->offer_dinner_price,
                     'offer_dinner_guest' => $offer->offer_dinner_guest,
+                    'currency' => $offer->currency,
+                    'rate_suffix' => $offer->rate_suffix,
                     'offer_short_th' => $offer->offer_short_th,
                     'offer_short_en' => $offer->offer_short_en,
                     'offer_short_cn' => $offer->offer_short_cn,

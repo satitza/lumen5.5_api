@@ -152,14 +152,14 @@ class BookingController extends BaseController
                                         $GLOBALS['contact_phone_v'],
                                         $GLOBALS['contact_request_v']
                                     );
+                                }else{
+                                    $this->update_balance(
+                                        $GLOBALS['offer_id'],
+                                        $GLOBALS['book_date'],
+                                        $GLOBALS['book_guest'],
+                                        $GLOBALS['time_type']
+                                    );
                                 }
-
-                                $this->update_balance(
-                                    $GLOBALS['offer_id'],
-                                    $GLOBALS['book_date'],
-                                    $GLOBALS['book_guest'],
-                                    $GLOBALS['time_type']
-                                );
 
                                 return response()->json([
                                     'message' => 'Create booking success'
@@ -207,17 +207,17 @@ class BookingController extends BaseController
                                         $GLOBALS['contact_phone_v'],
                                         $GLOBALS['contact_request_v']
                                     );
+                                }else{
+                                    /**
+                                     * Create balance
+                                     */
+                                    $this->create_balance(
+                                        $GLOBALS['offer_id'],
+                                        $GLOBALS['book_date'],
+                                        $GLOBALS['book_guest'],
+                                        $GLOBALS['time_type']
+                                    );
                                 }
-
-                                /**
-                                 * Create balance
-                                 */
-                                $this->create_balance(
-                                    $GLOBALS['offer_id'],
-                                    $GLOBALS['book_date'],
-                                    $GLOBALS['book_guest'],
-                                    $GLOBALS['time_type']
-                                );
 
                                 return response()->json([
                                     'message' => 'Create booking success'
