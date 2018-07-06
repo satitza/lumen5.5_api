@@ -15,13 +15,17 @@ class BalanceController extends BaseController
     public function __construct()
     {
         $this->middleware('auth');
+
+        $GLOBALS['enable'] = 1;
+        $GLOBALS['disable'] = 2;
+
     }
 
     public function GetAllBalances()
     {
         try {
 
-            $where = ['active_id' => 1];
+            $where = ['active_id' => $GLOBALS['enable']];
             $balances = DB::table('book_check_balances')
                 ->select('book_check_balances.id', 'book_offer_id', 'offers.offer_name_en', 'book_time_type',
                     'book_offer_date', 'book_offer_guest as book_offer_last_guest', 'book_offer_balance', 'active')
@@ -46,7 +50,7 @@ class BalanceController extends BaseController
     {
         try {
 
-            $where = ['book_offer_id' => $offer_id, 'book_offer_date' => $offer_date, 'book_time_type' => $offer_time_type, 'active_id' => 1];
+            $where = ['book_offer_id' => $offer_id, 'book_offer_date' => $offer_date, 'book_time_type' => $offer_time_type, 'active_id' => $GLOBALS['enable']];
             $balances = DB::table('book_check_balances')
                 ->select('book_check_balances.id', 'book_offer_id', 'offers.offer_name_en', 'book_time_type',
                     'book_offer_date', 'book_offer_guest as book_offer_last_guest', 'book_offer_balance', 'active')

@@ -12,12 +12,16 @@ class HotelsController extends BaseController
     public function __construct()
     {
         $this->middleware('auth');
+
+        $GLOBALS['enable'] = 1;
+        $GLOBALS['disable'] = 2;
+
     }
 
     public function GetAllHotels()
     {
         try {
-            $where = ['active_id' => '1'];
+            $where = ['active_id' => $GLOBALS['enable']];
             $hotels = DB::table('hotels')
                 ->select('hotels.id', 'hotel_name', 'hotels.mid', 'hotels.secret_key', 'actives.active', 'hotel_comment')
                 ->join('actives', 'hotels.active_id', '=', 'actives.id')
@@ -37,7 +41,7 @@ class HotelsController extends BaseController
     public function GetHotelId($id)
     {
         try {
-            $where = ['active_id' => '1', 'hotels.id' => $id];
+            $where = ['active_id' => $GLOBALS['enable'], 'hotels.id' => $id];
             $hotels = DB::table('hotels')
                 ->select('hotels.id', 'hotel_name', 'hotels.mid', 'hotels.secret_key', 'actives.active', 'hotel_comment')
                 ->join('actives', 'hotels.active_id', '=', 'actives.id')

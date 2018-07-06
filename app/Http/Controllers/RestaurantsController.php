@@ -10,12 +10,16 @@ class RestaurantsController extends BaseController
     public function __construct()
     {
         $this->middleware('auth');
+
+        $GLOBALS['enable'] = 1;
+        $GLOBALS['disable'] = 2;
+
     }
 
     public function GetAllRestaurants()
     {
         try {
-            $where = ['restaurants.active_id' => '1'];
+            $where = ['restaurants.active_id' => $GLOBALS['enable']];
             $restaurants = DB::table('restaurants')
                 ->select('restaurants.id', 'restaurant_name', 'restaurant_email', 'hotel_name', 'actives.active', 'restaurant_comment')
                 ->join('hotels', 'restaurants.hotel_id', '=', 'hotels.id')
@@ -36,7 +40,7 @@ class RestaurantsController extends BaseController
     public function GetRestaurantId($id)
     {
         try {
-            $where = ['restaurants.active_id' => '1', 'restaurants.id' => $id];
+            $where = ['restaurants.active_id' => $GLOBALS['enable'], 'restaurants.id' => $id];
             $restaurants = DB::table('restaurants')
                 ->select('restaurants.id', 'restaurant_name', 'restaurant_email', 'hotel_name', 'actives.active', 'restaurant_comment')
                 ->join('hotels', 'restaurants.hotel_id', '=', 'hotels.id')
@@ -72,7 +76,7 @@ class RestaurantsController extends BaseController
     public function GetAllRestaurantHotelId($id)
     {
         try {
-            $where = ['restaurants.active_id' => '1', 'restaurants.hotel_id' => $id];
+            $where = ['restaurants.active_id' => $GLOBALS['enable'], 'restaurants.hotel_id' => $id];
             $restaurants = DB::table('restaurants')
                 ->select('restaurants.id', 'restaurant_name', 'restaurant_email', 'hotel_name', 'actives.active', 'restaurant_comment')
                 ->join('hotels', 'restaurants.hotel_id', '=', 'hotels.id')

@@ -10,6 +10,10 @@ class OffersController extends BaseController
     public function __construct()
     {
         $this->middleware('auth');
+
+        $GLOBALS['enable'] = 1;
+        $GLOBALS['disable'] = 2;
+
     }
 
     public function GetAllOffers()
@@ -26,6 +30,7 @@ class OffersController extends BaseController
                 ->join('restaurants', 'offers.restaurant_id', '=', 'restaurants.id')
                 ->join('currencies', 'offers.currency_id', '=', 'currencies.id')
                 ->join('rate_suffixes', 'offers.rate_suffix_id', '=', 'rate_suffixes.id')
+                ->where('offers.active_id', $GLOBALS['enable'])
                 ->orderBy('offers.id', 'asc')->get();
 
             $all_offers = array();
@@ -115,7 +120,7 @@ class OffersController extends BaseController
     public function GetOfferId($id)
     {
         try {
-            $where = ['offers.id' => $id];
+            $where = ['offers.id' => $id, 'offers.active_id' => $GLOBALS['enable']];
             $offers = DB::table('offers')
                 ->select('offers.id', 'offers.hotel_id','hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
                     'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
@@ -233,7 +238,7 @@ class OffersController extends BaseController
     public function GetAllOfferHotelId($id)
     {
         try {
-            $where = ['offers.hotel_id' => $id];
+            $where = ['offers.hotel_id' => $id, 'offers.active_id' => $GLOBALS['enable']];
             $offers = DB::table('offers')
                 ->select('offers.id', 'offers.hotel_id','hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
                     'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
@@ -353,7 +358,7 @@ class OffersController extends BaseController
     public function GetAllOfferRestaurantId($id)
     {
         try {
-            $where = ['offers.restaurant_id' => $id];
+            $where = ['offers.restaurant_id' => $id, 'offers.active_id' => $GLOBALS['enable']];
             $offers = DB::table('offers')
                 ->select('offers.id', 'offers.hotel_id','hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
                     'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',

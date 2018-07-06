@@ -51,6 +51,9 @@ class BookingController extends BaseController
             $GLOBALS['voucher'] = $request->voucher;
             $GLOBALS['voucher_status'] = 1;
 
+            $GLOBALS['enable'] = 1;
+            $GLOBALS['disable'] = 2;
+
         } catch (HttpException $e) {
             return response()->json([
                 'message' => $e->getMessage()
@@ -116,60 +119,69 @@ class BookingController extends BaseController
                          * Check balance exists
                          */
                         if ($this->CheckBalanceExists($GLOBALS['offer_id'], $GLOBALS['book_date'], $GLOBALS['time_type']) == true) {
+
                             /**
                              * Check guest over balance
                              */
                             if ($this->CheckGuestOverBalance($GLOBALS['offer_id'], $GLOBALS['time_type'], $GLOBALS['book_date'], $GLOBALS['book_guest']) == false) {
-                                /**
-                                 * Create booking
-                                 */
-                                $this->create_booking(
-                                    $GLOBALS['book_id'],
-                                    $GLOBALS['offer_id'],
-                                    $GLOBALS['book_date'],
-                                    $GLOBALS['book_time'],
-                                    $GLOBALS['book_guest'],
-                                    $GLOBALS['contact_title'],
-                                    $GLOBALS['contact_firstname'],
-                                    $GLOBALS['contact_lastname'],
-                                    $GLOBALS['contact_email'],
-                                    $GLOBALS['contact_phone'],
-                                    $GLOBALS['contact_request'],
-                                    $GLOBALS['time_type'],
-                                    $GLOBALS['voucher_status']
-                                );
 
-                                /**
-                                 * Create Voucher user if voucher == true
-                                 */
-                                if ((int)$GLOBALS['voucher'] == 2) {
-                                    $this->create_voucher(
+
+                                if ($this->CheckBalanceStatus($GLOBALS['offer_id'], $GLOBALS['book_date'], $GLOBALS['time_type']) == true){
+                                    /**
+                                     * Create booking
+                                     */
+                                    $this->create_booking(
                                         $GLOBALS['book_id'],
-                                        $GLOBALS['contact_title_v'],
-                                        $GLOBALS['contact_firstname_v'],
-                                        $GLOBALS['contact_lastname_v'],
-                                        $GLOBALS['contact_email_v'],
-                                        $GLOBALS['contact_phone_v'],
-                                        $GLOBALS['contact_request_v']
-                                    );
-                                } else {
-                                    $this->update_balance(
                                         $GLOBALS['offer_id'],
                                         $GLOBALS['book_date'],
+                                        $GLOBALS['book_time'],
                                         $GLOBALS['book_guest'],
-                                        $GLOBALS['time_type']
+                                        $GLOBALS['contact_title'],
+                                        $GLOBALS['contact_firstname'],
+                                        $GLOBALS['contact_lastname'],
+                                        $GLOBALS['contact_email'],
+                                        $GLOBALS['contact_phone'],
+                                        $GLOBALS['contact_request'],
+                                        $GLOBALS['time_type'],
+                                        $GLOBALS['voucher_status']
                                     );
-                                }
 
-                                return response()->json([
-                                    'message' => 'Create booking success'
-                                ]);
+                                    /**
+                                     * Create Voucher user if voucher == true
+                                     */
+                                    if ((int)$GLOBALS['voucher'] == 2) {
+                                        $this->create_voucher(
+                                            $GLOBALS['book_id'],
+                                            $GLOBALS['contact_title_v'],
+                                            $GLOBALS['contact_firstname_v'],
+                                            $GLOBALS['contact_lastname_v'],
+                                            $GLOBALS['contact_email_v'],
+                                            $GLOBALS['contact_phone_v'],
+                                            $GLOBALS['contact_request_v']
+                                        );
+                                    } else {
+                                        $this->update_balance(
+                                            $GLOBALS['offer_id'],
+                                            $GLOBALS['book_date'],
+                                            $GLOBALS['book_guest'],
+                                            $GLOBALS['time_type']
+                                        );
+                                    }//end check voucher == 2
+
+                                    return response()->json([
+                                        'message' => 'Create booking success'
+                                    ]);
+                                }else {
+                                    return response()->json([
+                                        'message' => 'Balance is disable'
+                                    ]);
+                                }
 
                             } else {
                                 return response()->json([
                                     'message' => 'Booking guest is over balance'
                                 ]);
-                            }
+                            }// end CheckGuestOverBalance
                         } else {
                             /**
                              * Check guest over offer
@@ -217,7 +229,7 @@ class BookingController extends BaseController
                                         $GLOBALS['book_guest'],
                                         $GLOBALS['time_type']
                                     );
-                                }
+                                } // end check voucher == 2
 
                                 return response()->json([
                                     'message' => 'Create booking success'
@@ -227,7 +239,7 @@ class BookingController extends BaseController
                                 return response()->json([
                                     'message' => 'Booking guest is over offer'
                                 ], 500);
-                            }
+                            } // end CheckGuestOverOffer
                         }
 
                     } else {
@@ -292,6 +304,32 @@ class BookingController extends BaseController
             throw new Exception("Check balances exists exception");
         }
     }
+
+
+    /**
+     * @param $offer_id
+     * @param $book_date
+     * @param $time_type
+     * @return mixed
+     */
+    public function CheckBalanceStatus($offer_id, $book_date, $time_type)
+    {
+        try {
+            $where = ['book_offer_id' => $offer_id, 'book_time_type' => $time_type];
+            $balances = DB::table('book_check_balances')->where($where)
+                ->whereDate('book_offer_date', $book_date)->first();
+            if ($balances->active_id == 1) {
+                return true; // Balance is enable
+            } else {
+                return false; // Balance is disable
+            }
+        } catch (QueryException $e) {
+            throw new QueryException("Check balances status query exception");
+        } catch (Exception $e) {
+            throw new Exception("Check balances status exception");
+        }
+    }
+
 
     /**
      * @param $offer_id
@@ -384,41 +422,47 @@ class BookingController extends BaseController
             $book_price = null;
             $offers = DB::table('offers')->where('id', $offer_id)->first();
 
-            if ($time_type == 'lunch') {
-                $book_price = (int)$offers->offer_lunch_price * (int)$book_guest;
-            } else if ($time_type == 'dinner') {
-                $book_price = (int)$offers->offer_dinner_price * (int)$book_guest;
-            }
+            if($offers->active_id == $GLOBALS['enable']){
 
-            DB::beginTransaction();
-            DB::table('reports')->insert([
-                'booking_id' => $book_id,
-                'booking_hotel_id' => $offers->hotel_id,
-                'booking_restaurant_id' => $offers->restaurant_id,
-                'booking_offer_id' => $offer_id,
-                'booking_date' => Carbon::parse(date('Y-m-d', strtotime(strtr($book_date, '/', '-')))),
-                'booking_time' => $book_time,
-                'booking_guest' => $book_guest,
-                'booking_contact_title' => $book_title,
-                'booking_contact_firstname' => $book_firstname,
-                'booking_contact_lastname' => $book_lastname,
-                'booking_contact_email' => $book_email,
-                'booking_contact_phone' => $book_phone,
-                'booking_contact_request' => $book_request,
-                'booking_price' => $book_price,
-                'currency_id' => $offers->currency_id,
-                'rate_suffix_id' => $offers->rate_suffix_id,
-                'booking_time_type' => $time_type,
-                'booking_voucher' => $voucher_status,
-                'booking_status' => 1
-            ]);
-            DB::commit();
+                if ($time_type == 'lunch') {
+                    $book_price = (int)$offers->offer_lunch_price * (int)$book_guest;
+                } else if ($time_type == 'dinner') {
+                    $book_price = (int)$offers->offer_dinner_price * (int)$book_guest;
+                }
+
+                DB::beginTransaction();
+                DB::table('reports')->insert([
+                    'booking_id' => $book_id,
+                    'booking_hotel_id' => $offers->hotel_id,
+                    'booking_restaurant_id' => $offers->restaurant_id,
+                    'booking_offer_id' => $offer_id,
+                    'booking_date' => Carbon::parse(date('Y-m-d', strtotime(strtr($book_date, '/', '-')))),
+                    'booking_time' => $book_time,
+                    'booking_guest' => $book_guest,
+                    'booking_contact_title' => $book_title,
+                    'booking_contact_firstname' => $book_firstname,
+                    'booking_contact_lastname' => $book_lastname,
+                    'booking_contact_email' => $book_email,
+                    'booking_contact_phone' => $book_phone,
+                    'booking_contact_request' => $book_request,
+                    'booking_price' => $book_price,
+                    'currency_id' => $offers->currency_id,
+                    'rate_suffix_id' => $offers->rate_suffix_id,
+                    'booking_time_type' => $time_type,
+                    'booking_voucher' => $voucher_status,
+                    'booking_status' => 1
+                ]);
+                DB::commit();
+
+            }else{
+               throw new Exception("Offer is disable");
+            }
 
         } catch (QueryException $e) {
             DB::rollback();
             throw new QueryException("Insert booking query exception");
         } catch (Exception $e) {
-            throw new Exception("Insert booking exception");
+            throw new Exception("Insert booking exception : ".$e->getMessage());
         }
     }
 

@@ -12,19 +12,23 @@ class GetAllController extends Basecontroller
     public function __construct()
     {
         $this->middleware('auth');
+
+        $GLOBALS['enable'] = 1;
+        $GLOBALS['disable'] = 2;
+
     }
 
     public function GetAll()
     {
         try {
 
-            $where = ['hotels.active_id' => '1'];
+            $where = ['hotels.active_id' => $GLOBALS['enable']];
             $hotels = DB::table('hotels')
                 ->select('hotels.id', 'hotel_name', 'hotels.mid', 'hotels.secret_key', 'actives.active', 'hotel_comment')
                 ->join('actives', 'hotels.active_id', '=', 'actives.id')
                 ->orderBy('hotels.id', 'asc')->where($where)->get();
 
-            $where = ['restaurants.active_id' => '1'];
+            $where = ['restaurants.active_id' => $GLOBALS['enable']];
             $restaurants = DB::table('restaurants')
                 ->select('restaurants.id', 'restaurant_name', 'restaurant_email', 'hotel_name', 'actives.active', 'restaurant_comment')
                 ->join('hotels', 'restaurants.hotel_id', '=', 'hotels.id')
@@ -36,6 +40,7 @@ class GetAllController extends Basecontroller
                 ->join('restaurants', 'restaurant_pdfs.restaurant_id', '=', 'restaurants.id')
                 ->orderBy('restaurant_pdfs.id', 'ASC')->get();*/
 
+            $where = ['offers.active_id' => $GLOBALS['enable']];
             $offers = DB::table('offers')
                 ->select('offers.id', 'offers.hotel_id','hotels.hotel_name', 'restaurant_id', 'restaurants.restaurant_name',
                     'attachments', 'offer_name_th', 'offer_name_en', 'offer_name_cn', 'offer_date_start', 'offer_date_end', 'offer_day_select',
@@ -47,6 +52,7 @@ class GetAllController extends Basecontroller
                 ->join('restaurants', 'offers.restaurant_id', '=', 'restaurants.id')
                 ->join('currencies', 'offers.currency_id', '=', 'currencies.id')
                 ->join('rate_suffixes', 'offers.rate_suffix_id', '=', 'rate_suffixes.id')
+                ->where($where)
                 ->orderBy('offers.id', 'asc')->get();
 
             $all_offers = array();
@@ -120,11 +126,13 @@ class GetAllController extends Basecontroller
                 ]);
             }
 
+            $where = ['offers.active_id' => $GLOBALS['enable']];
             $images = DB::table('images')
                 ->select('images.id', 'offer_id', 'offer_name_en', 'image', 'hotels.hotel_name', 'restaurants.restaurant_name')
                 ->join('offers', 'offers.id', '=', 'images.offer_id')
                 ->join('hotels', 'hotels.id', '=', 'offers.hotel_id')
                 ->join('restaurants', 'restaurants.id', '=', 'offers.restaurant_id')
+                ->where($where)
                 ->orderBy('images.id', 'asc')->get();
 
             return response()->json([
