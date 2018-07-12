@@ -25,7 +25,7 @@ class OffersController extends BaseController
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
                     'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'currency', 'rate_suffix',
                     'offer_short_th', 'offer_short_en', 'offer_short_cn',
-                    'offer_comment_th', 'offer_comment_en', 'offer_comment_cn')
+                    'offer_comment_th', 'offer_comment_en', 'offer_comment_cn', 'offer_type')
                 ->join('hotels', 'offers.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'offers.restaurant_id', '=', 'restaurants.id')
                 ->join('currencies', 'offers.currency_id', '=', 'currencies.id')
@@ -97,6 +97,7 @@ class OffersController extends BaseController
                     'offer_comment_th' => $offer->offer_comment_th,
                     'offer_comment_en' => $offer->offer_comment_en,
                     'offer_comment_cn' => $offer->offer_comment_cn,
+                    'offer_type' => $offer->offer_type,
                     'term_th' => $terms_th_field,
                     'term_en' => $terms_en_field,
                     'term_cn' => $terms_cn_field,
@@ -127,7 +128,7 @@ class OffersController extends BaseController
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
                     'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'currency', 'rate_suffix',
                     'offer_short_th', 'offer_short_en', 'offer_short_cn',
-                    'offer_comment_th', 'offer_comment_en', 'offer_comment_cn')
+                    'offer_comment_th', 'offer_comment_en', 'offer_comment_cn', 'offer_type')
                 ->join('hotels', 'offers.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'offers.restaurant_id', '=', 'restaurants.id')
                 ->join('currencies', 'offers.currency_id', '=', 'currencies.id')
@@ -198,6 +199,7 @@ class OffersController extends BaseController
                     'offer_comment_th' => $offer->offer_comment_th,
                     'offer_comment_en' => $offer->offer_comment_en,
                     'offer_comment_cn' => $offer->offer_comment_cn,
+                    'offer_type' => $offer->offer_type,
                     'term_th' => $terms_th_field,
                     'term_en' => $terms_en_field,
                     'term_cn' => $terms_cn_field,
@@ -245,7 +247,7 @@ class OffersController extends BaseController
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
                     'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'currency', 'rate_suffix',
                     'offer_short_th', 'offer_short_en', 'offer_short_cn',
-                    'offer_comment_th', 'offer_comment_en', 'offer_comment_cn')
+                    'offer_comment_th', 'offer_comment_en', 'offer_comment_cn', 'offer_type')
                 ->join('hotels', 'offers.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'offers.restaurant_id', '=', 'restaurants.id')
                 ->join('currencies', 'offers.currency_id', '=', 'currencies.id')
@@ -316,6 +318,7 @@ class OffersController extends BaseController
                     'offer_comment_th' => $offer->offer_comment_th,
                     'offer_comment_en' => $offer->offer_comment_en,
                     'offer_comment_cn' => $offer->offer_comment_cn,
+                    'offer_type' => $offer->offer_type,
                     'term_th' => $terms_th_field,
                     'term_en' => $terms_en_field,
                     'term_cn' => $terms_cn_field,
@@ -365,7 +368,7 @@ class OffersController extends BaseController
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
                     'offer_time_dinner_end', 'offer_dinner_price', 'currency', 'rate_suffix',
                     'offer_dinner_guest', 'offer_short_th', 'offer_short_en', 'offer_short_cn',
-                    'offer_comment_th', 'offer_comment_en', 'offer_comment_cn')
+                    'offer_comment_th', 'offer_comment_en', 'offer_comment_cn', 'offer_type')
                 ->join('hotels', 'offers.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'offers.restaurant_id', '=', 'restaurants.id')
                 ->join('currencies', 'offers.currency_id', '=', 'currencies.id')
@@ -436,6 +439,7 @@ class OffersController extends BaseController
                     'offer_comment_th' => $offer->offer_comment_th,
                     'offer_comment_en' => $offer->offer_comment_en,
                     'offer_comment_cn' => $offer->offer_comment_cn,
+                    'offer_type' => $offer->offer_type,
                     'term_th' => $terms_th_field,
                     'term_en' => $terms_en_field,
                     'term_cn' => $terms_cn_field,

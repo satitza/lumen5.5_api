@@ -21,7 +21,7 @@ class RestaurantsController extends BaseController
         try {
             $where = ['restaurants.active_id' => $GLOBALS['enable']];
             $restaurants = DB::table('restaurants')
-                ->select('restaurants.id', 'restaurant_name', 'restaurant_email', 'hotel_name', 'actives.active', 'restaurant_comment')
+                ->select('restaurants.id', 'restaurant_name', 'restaurant_email', 'restaurant_phone', 'hotel_name', 'actives.active', 'restaurant_comment')
                 ->join('hotels', 'restaurants.hotel_id', '=', 'hotels.id')
                 ->join('actives', 'restaurants.active_id', '=', 'actives.id')
                 ->orderBy('restaurants.id', 'asc')->where($where)->get();
@@ -42,7 +42,7 @@ class RestaurantsController extends BaseController
         try {
             $where = ['restaurants.active_id' => $GLOBALS['enable'], 'restaurants.id' => $id];
             $restaurants = DB::table('restaurants')
-                ->select('restaurants.id', 'restaurant_name', 'restaurant_email', 'hotel_name', 'actives.active', 'restaurant_comment')
+                ->select('restaurants.id', 'restaurant_name', 'restaurant_email', 'restaurant_phone', 'hotel_name', 'actives.active', 'restaurant_comment')
                 ->join('hotels', 'restaurants.hotel_id', '=', 'hotels.id')
                 ->join('actives', 'restaurants.active_id', '=', 'actives.id')
                 ->orderBy('restaurants.id', 'asc')->where($where)->get();
@@ -78,7 +78,7 @@ class RestaurantsController extends BaseController
         try {
             $where = ['restaurants.active_id' => $GLOBALS['enable'], 'restaurants.hotel_id' => $id];
             $restaurants = DB::table('restaurants')
-                ->select('restaurants.id', 'restaurant_name', 'restaurant_email', 'hotel_name', 'actives.active', 'restaurant_comment')
+                ->select('restaurants.id', 'restaurant_name', 'restaurant_email', 'restaurant_phone', 'hotel_name', 'actives.active', 'restaurant_comment')
                 ->join('hotels', 'restaurants.hotel_id', '=', 'hotels.id')
                 ->join('actives', 'restaurants.active_id', '=', 'actives.id')
                 ->orderBy('restaurants.id', 'asc')->where($where)->get();

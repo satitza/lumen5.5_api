@@ -30,7 +30,7 @@ class GetAllController extends Basecontroller
 
             $where = ['restaurants.active_id' => $GLOBALS['enable']];
             $restaurants = DB::table('restaurants')
-                ->select('restaurants.id', 'restaurant_name', 'restaurant_email', 'hotel_name', 'actives.active', 'restaurant_comment')
+                ->select('restaurants.id', 'restaurant_name', 'restaurant_email', 'restaurant_phone', 'hotel_name', 'actives.active', 'restaurant_comment')
                 ->join('hotels', 'restaurants.hotel_id', '=', 'hotels.id')
                 ->join('actives', 'restaurants.active_id', '=', 'actives.id')
                 ->orderBy('restaurants.id', 'asc')->where($where)->get();
@@ -47,7 +47,7 @@ class GetAllController extends Basecontroller
                     'offer_time_lunch_start', 'offer_time_lunch_end', 'offer_lunch_price', 'offer_lunch_guest', 'offer_time_dinner_start',
                     'offer_time_dinner_end', 'offer_dinner_price', 'offer_dinner_guest', 'currency', 'rate_suffix',
                     'offer_short_th', 'offer_short_en', 'offer_short_cn',
-                    'offer_comment_th', 'offer_comment_en', 'offer_comment_cn')
+                    'offer_comment_th', 'offer_comment_en', 'offer_comment_cn', 'offer_type')
                 ->join('hotels', 'offers.hotel_id', '=', 'hotels.id')
                 ->join('restaurants', 'offers.restaurant_id', '=', 'restaurants.id')
                 ->join('currencies', 'offers.currency_id', '=', 'currencies.id')
@@ -119,6 +119,7 @@ class GetAllController extends Basecontroller
                     'offer_comment_th' => $offer->offer_comment_th,
                     'offer_comment_en' => $offer->offer_comment_en,
                     'offer_comment_cn' => $offer->offer_comment_cn,
+                    'offer_type' => $offer->offer_type,
                     'term_th' => $terms_th_field,
                     'term_en' => $terms_en_field,
                     'term_cn' => $terms_cn_field,
