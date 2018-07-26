@@ -57,13 +57,13 @@ $router->group(['prefix' => 'api/image', 'middleware' => 'auth'], function () us
     $router->get('image_offer_id/{id}', 'ImagesController@GetImageOfferId');
 });
 
-$router->group(['prefix' => 'api/booking', 'middleware' => 'auth'], function () use ($router) {
-    $router->post('put_booking', 'BookingController@booking');
-    $router->post('check_bill', 'CheckBillController@check_bill');
-});
-
 $router->group(['prefix' => 'api/balance', 'middleware' => 'auth'], function () use ($router) {
     $router->get('get_all_balances', 'BalanceController@GetAllBalances');
     $router->get('get_balance/{offer_id}/date/{offer_date}/time_type/{offer_time_type}', 'BalanceController@GetBalance');
+});
+
+$router->group(['prefix' => 'api/booking', 'middleware' => 'auth'], function () use ($router) {
+    $router->post('put_booking', 'BookingController@booking');
+    $router->post('check_bill', 'CheckBillController@check_bill');
 });
 
