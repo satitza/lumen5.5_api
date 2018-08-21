@@ -425,9 +425,9 @@ class BookingController extends BaseController
             if($offers->active_id == $GLOBALS['enable']){
 
                 if ($time_type == 'lunch') {
-                    $book_price = (int)$offers->offer_lunch_price * (int)$book_guest;
+                    $book_price = (float)$offers->offer_lunch_price * (float)$book_guest;
                 } else if ($time_type == 'dinner') {
-                    $book_price = (int)$offers->offer_dinner_price * (int)$book_guest;
+                    $book_price = (float)$offers->offer_dinner_price * (float)$book_guest;
                 }
 
                 DB::beginTransaction();
